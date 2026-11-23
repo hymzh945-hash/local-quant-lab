@@ -8,7 +8,7 @@ No account. No API key. No install. No cloud. Runs offline in your browser — y
 
 **[▶ Try the live demo](https://hymzh945-hash.github.io/local-quant-lab/)** (loads with demo data in one click)
 
-![Backtest view](screenshots/01-backtest.png)
+![Backtest view](01-backtest.png)
 
 ---
 
@@ -44,7 +44,7 @@ The free edition gives you the core engine and the equity curve. The Standard ed
 - **One-click research report** — standalone HTML with every chart embedded, ready to send to someone
 - **Method handbook** — six chapters: look-ahead bias, why Sharpe lies, overfitting, funding costs, leverage and liquidation
 
-![Parameter heatmap](screenshots/03-heatmap.png)
+![Parameter heatmap](03-heatmap.png)
 
 ---
 
@@ -53,7 +53,7 @@ The free edition gives you the core engine and the equity curve. The Standard ed
 1. Download `index.html` (or clone the repo)
 2. Double-click it — it opens in any modern browser, offline
 3. Click **Load demo data** to see the whole workflow in about 20 seconds
-4. Or click **Choose CSV file** and pick `sample-data/BTC_perp_1D.csv`
+4. Or click **Choose CSV file** and pick `BTC_perp_1D.csv`
 
 CSV needs a timestamp column plus open/high/low/close. Volume is optional.
 
