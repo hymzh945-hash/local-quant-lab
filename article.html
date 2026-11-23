@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I open-sourced my crypto backtester because most backtests are lying to you</title>
+<style>
+body{margin:0;background:#fff;color:#1a1a1a;font-family:Georgia,'Times New Roman',serif;line-height:1.6}
+main{max-width:680px;margin:0 auto;padding:48px 20px 80px}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin:0 0 24px;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-weight:700}
+h2{font-size:22px;margin:38px 0 10px;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif}
+p{font-size:19px;margin:0 0 22px}
+ul{font-size:19px;margin:0 0 22px;padding-left:22px}
+li{margin-bottom:6px}
+figure{margin:26px 0}
+img{width:100%;border-radius:4px;display:block}
+a{color:#1a8917}
+.byline{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#6b6b6b;margin-bottom:28px}
+</style></head><body><main>
+<h1>I open-sourced my crypto backtester because most backtests are lying to you</h1>
+<div class="byline">Zihan Ma · Local Quant Lab</div>
+<p>Most backtests are not wrong. They are answering the wrong question.</p>
+<p>"How much would this have made?" is the easiest question in the file, and the least useful. With enough strategy variations and enough parameter combinations, you can make any past period look profitable. That is not evidence. That is arithmetic performed on noise.</p>
+<p>I built a small backtester for crypto perpetual futures. This week I put the free edition in a public repository, with a live demo that runs entirely in your browser.</p>
+<h2>The three ways a backtest lies</h2>
+<p><strong>1. Look-ahead bias.</strong> Your signal reads the close of the bar you are trading. Your stop is checked before the bar's high and low resolve. Your funding cost is charged at the wrong time. None of these errors show up as a bug. They show up as a smoother equity curve.</p>
+<p><strong>2. Parameter cherry-picking.</strong> You test fast = 5, 10, 15, 20 and slow = 20, 30, 40. One cell is bright green. You keep that cell and call it a strategy. What you actually found is a coincidence that survived one sampling of history.</p>
+<p>The test for this is not more backtesting. It is looking at the whole grid. If the green is a broad block, the edge survives parameter choice. If it is one glowing cell surrounded by red, you fitted the noise.</p>
+<p><strong>3. No out-of-sample test.</strong> Every number produced by parameters you chose while looking at the same data is in-sample. Walk-forward validation is the only cheap way out: pick parameters on earlier data, evaluate on the window immediately after, roll forward, repeat. Then look at the out-of-sample win rate per fold, not the aggregate.</p>
+<p>I have made all three mistakes. The tool exists because I got tired of making them quietly.</p>
+<h2>What I built</h2>
+<p>One HTML file. Double-click it, and you have a research workbench: import candles, run strategies, look at the equity curve against 1x buy-and-hold, with the in-sample and out-of-sample split sitting on the result card instead of hidden in a setting.</p>
+<ul><li>No account</li><li>No API key</li><li>No install</li><li>No cloud — your candles never leave the page</li></ul>
+<p>Cost model is visible rather than implicit: fees and slippage per side, funding settled against real funding history when imported, maintenance margin and forced liquidation on the position. If you turn the cost model off, the curve gets prettier. That is exactly why the switch is on the screen.</p>
+<figure><img src="https://hymzh945-hash.github.io/local-quant-lab/01-backtest.png" alt="Local Quant Lab backtest view"></figure>
+<h2>What is free and what is not</h2>
+<p>Being straight about the line, because a "free" tool that hides the useful part is a bad tool:</p>
+<p><strong>Free edition</strong> — the engine, four strategies (SMA cross, Donchian breakout, RSI mean reversion, buy-and-hold benchmark), CSV import, OKX public data fetch, equity curve and headline metrics, bilingual UI.</p>
+<p><strong>Standard edition</strong> (https://hymz.gumroad.com/l/local-quant-lab) — fourteen strategies, the parameter sensitivity heatmap, walk-forward validation with per-fold diagnostics, cross-asset replay across BTC / ETH / SOL, one-click research report export, and a six-chapter method handbook covering look-ahead bias, why Sharpe lies, overfitting, funding costs, leverage and liquidation.</p>
+<p>The heatmap and walk-forward are in the paid edition because they are the two features that do the actual work of falsifying a strategy. Giving those away would mean giving away the point.</p>
+<h2>Try it in twenty seconds</h2>
+<ul><li>Live demo: **https://hymzh945-hash.github.io/local-quant-lab/**</li><li>Repository: **https://github.com/hymzh945-hash/local-quant-lab**</li></ul>
+<p>Click "Load demo data", then click through the tabs. If the equity curve immediately makes you want to check whether the split is in-sample or out-of-sample, the tool is doing its job.</p>
+<h2>One honest limit</h2>
+<p>This is a historical analysis tool. It does not connect to an exchange, does not place orders, does not emit signals, and does not tell you what happens next. Nothing does. Anyone selling you the last part is selling you something else.</p>
+<p>If you find a bug, open an issue. If the cost model disagrees with your exchange's funding history, I want to know — that is the kind of disagreement that is worth fixing.</p>
+</main></body></html>
