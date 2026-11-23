@@ -1,0 +1,9 @@
+Local Quant Lab - Free Edition
+Evaluation copy. Personal use only.
+
+This evaluation build includes 4 strategies, CSV import, OKX data fetch,
+equity curve and core metrics. Parameter heatmaps, walk-forward validation,
+cross-asset replay and report export are in the Standard edition.
+
+Not for resale or redistribution. Historical analysis tool only: no account
+connection, no order placement, no signals, no performance promise.

@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Quant Lab</title>
+<style>
+:root{--bg:#0b1020;--panel:#111a2c;--panel2:#151f34;--line:#24314b;--text:#edf3ff;--muted:#91a0ba;--blue:#79a9ff;--green:#45d6a1;--red:#ff7186;--gold:#ffca72;--purple:#a78bfa}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 15% -10%,#1b2c50 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif}
+.shell{max-width:1500px;margin:auto;padding:26px 30px 56px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#5a91ff,#8e70ff);display:grid;place-items:center;font-size:21px;box-shadow:0 8px 28px #517cff44}
+.brand h1{font-size:19px;margin:0;letter-spacing:.2px}
+.brand p{color:var(--muted);margin:3px 0 0;font-size:12px}
+.headright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{border:1px solid #244e45;color:#77e3bd;background:#122a2b;border-radius:20px;padding:7px 12px;font-size:12px;white-space:nowrap}
+.lic{border:1px solid #3a3355;color:#b4a6ff;background:#1b1730;border-radius:20px;padding:7px 12px;font-size:11px;white-space:nowrap}
+.tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
+.tabs button{background:#0e1728;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:9px 15px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;transition:.15s}
+.tabs button.on{background:linear-gradient(120deg,#2c4b7f,#3b356e);color:#fff;border-color:#4a6ba8;font-weight:600}
+.tabs button:hover{color:#dfe9ff}
+.grid{display:grid;grid-template-columns:326px minmax(0,1fr);gap:18px;align-items:start}
+.side{position:sticky;top:16px}
+.card{background:linear-gradient(160deg,#121b2e,#101829);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 12px 35px #0002}
+.side .card+.card{margin-top:14px}
+.title{font-size:15px;font-weight:650;margin:0}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.field label{display:block;color:var(--muted);font-size:11px;margin:0 0 5px;letter-spacing:.2px}
+.field select,.field input{width:100%;background:#0d1525;border:1px solid #2b3954;color:var(--text);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none}
+.field select:focus,.field input:focus{border-color:#6d96e8}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+.f1{margin-top:11px}
+button{background:#20385d;border:1px solid #45659a;color:#e9f1ff;border-radius:9px;padding:9px 14px;font:inherit;font-size:13px;cursor:pointer;transition:.15s}
+button:hover{background:#294978;transform:translateY(-1px)}
+button.primary{background:linear-gradient(120deg,#4e85ec,#6d71e8);border:0;font-weight:650;padding:11px 18px;width:100%;margin-top:13px}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.filebtn{display:block;text-align:center;border:1px dashed #3c4e70;border-radius:9px;padding:9px;color:#a9c2ee;font-size:12px;cursor:pointer;margin-top:10px;background:#111c30}
+.filebtn:hover{background:#16243c}
+.status{min-height:18px;color:var(--gold);font-size:11px;margin-top:9px;line-height:1.45}
+.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.metric{padding:13px 14px;border-radius:12px;background:#0d1525;border:1px solid #202c43}
+.metric .label{color:var(--muted);font-size:10.5px;letter-spacing:.2px}
+.metric .value{font-size:19px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.positive{color:var(--green)}.negative{color:var(--red)}.neutral{color:var(--gold)}
+.chartwrap{position:relative;height:300px;margin-top:6px}
+.chartwrap canvas{width:100%;height:100%;display:block}
+.chartwrap.sm{height:230px}
+.chartwrap.xs{height:190px}
+.empty{position:absolute;inset:0;display:grid;place-items:center;color:#75839c;text-align:center;pointer-events:none;font-size:12px}
+.empty span{display:block;font-size:26px;margin-bottom:6px}
+.hide{display:none!important}
+.tablewrap{max-height:260px;overflow:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{color:var(--muted);text-align:left;font-weight:500;position:sticky;top:0;background:#121b2e;z-index:2}
+td,th{padding:8px;border-bottom:1px solid #202c40}
+.right{text-align:right}.mono{font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px}
+.note{font-size:11px;color:#a5b2c8;border-left:2px solid #607bb2;padding-left:10px;margin-top:12px;line-height:1.6}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;color:var(--muted);font-size:11px;flex-wrap:wrap}
+.dot{width:7px;height:7px;display:inline-block;border-radius:50%;margin-right:5px}
+.tabpane{display:none}
+.tabpane.on{display:block}
+.heat{display:grid;gap:3px;margin-top:8px;font-size:10px}
+.heatcell{padding:9px 4px;text-align:center;border-radius:5px;font-variant-numeric:tabular-nums;color:#0a1020;font-weight:600}
+.axisrow{display:grid;gap:3px;font-size:10px;color:var(--muted);margin-bottom:3px}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.stat{padding:11px 12px;border-radius:10px;background:#0d1525;border:1px solid #202c43}
+.stat .k{color:var(--muted);font-size:10.5px}
+.stat .v{font-size:15px;font-weight:650;margin-top:3px;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;border:1px solid #2c3d59;border-radius:20px;padding:3px 9px;font-size:10.5px;color:#a9bbd8;margin:2px 3px 2px 0}
+.guide h3{font-size:14px;margin:18px 0 6px;color:#cfe0ff}
+.guide p,.guide li{font-size:12.5px;color:#b7c4da;line-height:1.75}
+.guide ul{padding-left:18px}
+details{border:1px solid #24314b;border-radius:11px;padding:12px 14px;margin-top:9px;background:#0e1728}
+summary{cursor:pointer;font-size:13px;font-weight:600;color:#cddcff}
+details p,details li{font-size:12px;color:#b0bfd6;line-height:1.75;margin:8px 0 0}
+.foot{color:#687995;font-size:11px;margin:22px 2px 0;line-height:1.7}
+.warn{border-left-color:#ff9d6b;color:#ffcbb8}
+@media(max-width:1080px){
+ .grid{grid-template-columns:1fr}
+ .side{position:static}
+ .metrics{grid-template-columns:repeat(3,1fr)}
+ .two,.three{grid-template-columns:1fr}
+ .statgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){.shell{padding:16px 12px}.metrics{grid-template-columns:1fr 1fr}.f2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+  <div class="brand">
+    <div class="logo">⌁</div>
+    <div>
+      <h1>Local Quant Lab</h1>
+      <p>Local Quant Lab · Backtest · Sensitivity · Walk-forward · Report　v4.2</p>
+    </div>
+  </div>
+  <div class="headright">
+    <span class="lic" id="licBadge">Evaluation copy · unlicensed</span>
+    <span class="badge">● Offline · no trading account</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="run" class="on">1. Backtest</button>
+  <button data-tab="perf">2. Performance</button>
+  <button data-tab="grid">3. Sensitivity</button>
+  <button data-tab="wf">4. Walk-forward</button>
+  <button data-tab="report">5. Report</button>
+  <button data-tab="guide">6. Handbook</button>
+</nav>
+
+<div class="grid">
+<aside class="side">
+  <div class="card">
+    <h2 class="title">Data source</h2>
+    <div class="sub">CSV import, or read OKX public history directly</div>
+    <label class="filebtn" for="csvFile">Choose CSV file (timestamp,open,high,low,close,volume)</label>
+    <input id="csvFile" type="file" accept=".csv,text/csv" class="hide">
+    <div class="f2">
+      <div class="field"><label>Contract</label>
+        <select id="inst">
+          <option value="BTC-USDT-SWAP">BTC perp</option>
+          <option value="ETH-USDT-SWAP">ETH perp</option>
+          <option value="SOL-USDT-SWAP">SOL perp</option>
+          <option value="XRP-USDT-SWAP">XRP perp</option>
+        </select>
+      </div>
+      <div class="field"><label>Interval</label>
+        <select id="bar">
+          <option value="1D">1D</option>
+          <option value="4H">4H</option>
+          <option value="1H">1H</option>
+          <option value="15m">15 min</option>
+        </select>
+      </div>
+    </div>
+    <div class="f1 field"><label>Bars to fetch</label><input id="limit" type="number" min="60" max="5000" step="100" value="1200"></div>
+    <button id="fetchBtn" style="width:100%;margin-top:9px">Fetch OKX candles</button>
+    <button id="demoBtn" style="width:100%;margin-top:7px">Load demo data</button>
+    <div class="status" id="status">Awaiting data</div>
+  </div>
+
+  <div class="card">
+    <h2 class="title">Parameters</h2>
+    <div class="sub">Signal at close, executed next bar</div>
+    <div class="f1 field"><label>Strategy</label><select id="strategy"></select></div>
+    <div class="f2">
+      <div class="field"><label id="fastLabel">Fast period</label><input id="fast" type="number" min="2" value="20"></div>
+      <div class="field"><label id="slowLabel">Slow period</label><input id="slow" type="number" min="3" value="50"></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Starting capital (USDT)</label><input id="cash" type="number" min="100" value="10000"></div>
+      <div class="field"><label>Leverage</label><input id="lev" type="number" min="1" max="20" step="0.5" value="2"></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Account risk per trade %</label><input id="risk" type="number" min="0.1" max="10" step="0.1" value="2"></div>
+      <div class="field"><label>Stop per trade % (price)</label><input id="stop" type="number" min="0" max="50" step="0.5" value="5"></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Fee % per side</label><input id="fee" type="number" min="0" step="0.01" value="0.05"></div>
+      <div class="field"><label>Slippage % per side</label><input id="slip" type="number" min="0" step="0.01" value="0.03"></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Funding % / 8h</label><input id="funding" type="number" min="0" step="0.001" value="0.01"></div>
+      <div class="field"><label>Maintenance margin %</label><input id="mmr" type="number" min="0.1" max="20" step="0.1" value="0.5"></div>
+    </div>
+    <div class="f1 field"><label>Sizing mode</label>
+      <select id="sizing">
+        <option value="risk">Risk budget (position sized from stop and leverage)</option>
+        <option value="inverseVol">Inverse volatility (40% annual target)</option>
+      </select>
+    </div>
+    <button id="runBtn" class="primary">Run backtest →</button>
+    <div class="status" id="runStatus"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="title">Data overview</h2>
+    <div class="sub" id="dataMeta">No data loaded</div>
+    <div class="note" id="fundingMeta">Funding: not fetched — your flat rate estimate will be used.</div>
+    <div class="note warn">A historical analysis tool only. Not investment advice. Backtest results do not indicate future returns.</div>
+  </div>
+</aside>
+
+<section class="main">
+
+  <!-- 1. Backtest -->
+  <div class="tabpane on" id="tab-run">
+    <div class="metrics">
+      <div class="metric"><div class="label">Total return</div><div class="value" id="mReturn">—</div></div>
+      <div class="metric"><div class="label">CAGR</div><div class="value" id="mCagr">—</div></div>
+      <div class="metric"><div class="label">Max drawdown</div><div class="value" id="mDd">—</div></div>
+      <div class="metric"><div class="label">Sharpe</div><div class="value" id="mSharpe">—</div></div>
+      <div class="metric"><div class="label">Out-of-sample</div><div class="value" id="mOos">—</div></div>
+      <div class="metric"><div class="label">Trades</div><div class="value" id="mTrades">—</div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="row">
+        <div><h2 class="title">Equity curve</h2><div class="sub" id="chartSub">Strategy vs benchmark, after a backtest</div></div>
+        <div class="legend">
+          <span><i class="dot" style="background:#79a9ff"></i>Strategy equity</span>
+          <span><i class="dot" style="background:#6e7b91"></i>1x buy &amp; hold</span>
+        </div>
+      </div>
+      <div class="chartwrap"><canvas id="cvEquity"></canvas><div class="empty" id="eqEmpty"><div><span>⌁</span>Import data or load the demo to begin</div></div></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h2 class="title">Backtest summary</h2><div class="sub">Key settings and results</div>
+        <div class="tablewrap"><table><tbody id="summary"><tr><td style="color:#91a0ba">Shown after a backtest</td></tr></tbody></table></div>
+      </div>
+      <div class="card">
+        <h2 class="title">Recent trades</h2><div class="sub">Recorded from signal changes</div>
+        <div class="tablewrap"><table><thead><tr><th style="width:36%">Time</th><th style="width:30%">Action</th><th class="right">Price</th></tr></thead><tbody id="trades"><tr><td colspan="3" style="color:#91a0ba">n/a</td></tr></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Performance -->
+  <div class="tabpane" id="tab-perf">
+    <div class="card">
+      <div class="row"><div><h2 class="title">Drawdown</h2><div class="sub">Depth below the running peak</div></div><div class="legend"><span><i class="dot" style="background:#ff7186"></i>Drawdown</span></div></div>
+      <div class="chartwrap sm"><canvas id="cvDD"></canvas><div class="empty" id="ddEmpty"><div>No drawdown data</div></div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="row"><div><h2 class="title">Monthly returns</h2><div class="sub">Each cell is that month's equity change — green positive, red negative</div></div></div>
+      <div id="monthHeat" class="heat"></div>
+      <div id="monthEmpty" class="empty" style="position:static;padding:24px">No monthly data</div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="row"><div><h2 class="title">Rolling 30-day Sharpe</h2><div class="sub">Does return quality decay over time?</div></div></div>
+      <div class="chartwrap sm"><canvas id="cvRoll"></canvas><div class="empty" id="rollEmpty"><div>No data</div></div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2 class="title">Trade statistics</h2><div class="sub">Calculated over position intervals, including stops and liquidations</div>
+      <div class="statgrid" id="statGrid"></div>
+    </div>
+  </div>
+
+  <!-- 3. Sensitivity -->
+  <div class="tabpane" id="tab-grid">
+    <div class="card">
+      <div class="row">
+        <div><h2 class="title">Parameter sensitivity heatmap</h2><div class="sub">Brute-force fast × slow on the same data — does the result rest on one lucky parameter set?</div></div>
+        <div class="legend">
+          <select id="gridMetric" style="background:#0d1525;border:1px solid #2b3954;color:#dfe9ff;border-radius:8px;padding:7px 10px;font:inherit;font-size:12px">
+            <option value="sharpe">Sharpe</option>
+            <option value="total">Total return</option>
+            <option value="mdd">Max drawdown</option>
+            <option value="cagr">CAGR</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="legend"><span>Y: slow period&nbsp; X: fast period</span></div>
+        <button id="gridBtn">Run parameter scan</button>
+      </div>
+      <div id="gridHeat" class="heat"></div>
+      <div id="gridEmpty" class="empty" style="position:static;padding:30px">Hit run — takes about 1–3 seconds</div>
+      <div class="note">When the heatmap shows a broad block of one colour rather than isolated bright cells, that parameter region works as a whole. An isolated red highlight usually means overfitting.</div>
+    </div>
+  </div>
+
+  <!-- 4. Walk-forward -->
+  <div class="tabpane" id="tab-wf">
+    <div class="card">
+      <div class="row">
+        <div><h2 class="title">Walk-forward</h2><div class="sub">Pick parameters on earlier data, then test on the window right after that took no part in the choice</div></div>
+        <div class="legend">
+          <select id="wfFolds" style="background:#0d1525;border:1px solid #2b3954;color:#dfe9ff;border-radius:8px;padding:7px 10px;font:inherit;font-size:12px">
+            <option value="4">4 folds</option>
+            <option value="5" selected>5 folds</option>
+            <option value="6">6 folds</option>
+          </select>
+          <button id="wfBtn">Run walk-forward</button>
+        </div>
+      </div>
+      <div class="chartwrap sm"><canvas id="cvWF"></canvas><div class="empty" id="wfEmpty"><div>Click run</div></div></div>
+      <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-top:12px">
+        <div class="metric"><div class="label">OOS win rate (secondary)</div><div class="value" id="wfStab">—</div></div>
+        <div class="metric"><div class="label">Compounded return (primary)</div><div class="value" id="wfComp">—</div></div>
+        <div class="metric"><div class="label">Valid folds</div><div class="value" id="wfCount">—</div></div>
+      </div>
+      <div class="tablewrap" style="max-height:none"><table><thead><tr><th>fold</th><th>Test window</th><th class="right">Chosen params</th><th class="right">Return</th><th class="right">Buy & hold</th><th class="right">Sharpe</th><th class="right">Drawdown</th><th class="right">Trades</th></tr></thead><tbody id="wfRows"><tr><td colspan="8" style="color:#91a0ba">n/a</td></tr></tbody></table></div>
+      <div class="note">An out-of-sample win rate below 50% usually means the return came from parameter selection rather than from the strategy itself.</div>
+      <div class="note" id="wfIndep" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="row">
+        <div><h2 class="title">Cross-asset check</h2><div class="sub">Replay the current parameter set on every other dataset you have loaded, with no re-tuning</div></div>
+        <button id="xassetBtn">Replay on all datasets</button>
+      </div>
+      <div class="legend" id="xassetList" style="flex-wrap:wrap;margin-top:10px"></div>
+      <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-top:12px">
+        <div class="metric"><div class="label">Positive markets</div><div class="value" id="xaPos">—</div></div>
+        <div class="metric"><div class="label">Sharpe same sign</div><div class="value" id="xaAgree">—</div></div>
+        <div class="metric"><div class="label">Datasets replayed</div><div class="value" id="xaCount">—</div></div>
+      </div>
+      <div class="tablewrap" style="max-height:none;margin-top:12px"><table><thead><tr><th>Dataset</th><th>区间</th><th class="right">Bars</th><th class="right">Return</th><th class="right">Buy & hold</th><th class="right">Sharpe</th><th class="right">Drawdown</th><th class="right">Trades</th></tr></thead><tbody id="xaRows"><tr><td colspan="8" style="color:#91a0ba">Load at least two datasets from the data panel first</td></tr></tbody></table></div>
+      <div class="status" id="xaStatus">Not run yet</div>
+      <div class="note">If the whole parameter region collapses in another market, the original result came from that market's particular regime rather than from the strategy itself. Cross-market consistency decides whether a parameter set is worth keeping better than a single win rate does.</div>
+    </div>
+  </div>
+
+  <!-- 5. Report -->
+  <div class="tabpane" id="tab-report">
+    <div class="card">
+      <h2 class="title">Research report</h2>
+      <div class="sub">Package the current backtest, performance and risk charts into one forwardable HTML report — charts embedded, readable offline</div>
+      <div class="row" style="margin-top:12px">
+        <div class="legend"><span class="chip">Equity curve included</span><span class="chip">Drawdown curve included</span><span class="chip">Metric table included</span><span class="chip">Trade log included</span><span class="chip">Disclaimer included</span></div>
+        <button id="reportBtn" class="primary" style="width:auto;margin-top:0">Generate &amp; download report</button>
+      </div>
+      <div class="status" id="reportStatus">Run a backtest first</div>
+      <div class="note">The report is a single HTML file. Double-click it in any browser — it does not need this tool and does not need a network.</div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2 class="title">What the report contains</h2>
+      <div class="sub">Every report includes these sections</div>
+      <div class="tablewrap" style="max-height:none">
+        <table><tbody>
+          <tr><td>1. Data range and instrument</td><td class="right" style="color:#91a0ba">Bar count, date range, source</td></tr>
+          <tr><td>2. Strategy and parameters</td><td class="right" style="color:#91a0ba">Strategy, fast/slow periods, leverage, risk budget</td></tr>
+          <tr><td>3. Cost assumptions</td><td class="right" style="color:#91a0ba">Fees, slippage, funding, maintenance margin</td></tr>
+          <tr><td>4. Return and risk metrics</td><td class="right" style="color:#91a0ba">Total return, CAGR, drawdown, Sharpe, Sortino, Calmar</td></tr>
+          <tr><td>5. Trade quality</td><td class="right" style="color:#91a0ba">Win rate, profit factor, average holding, longest loss streak</td></tr>
+          <tr><td>6. In-sample / out-of-sample split</td><td class="right" style="color:#91a0ba">First 70% vs last 30%</td></tr>
+          <tr><td>7. Charts</td><td class="right" style="color:#91a0ba">Equity curve, drawdown curve</td></tr>
+          <tr><td>8. Disclaimer</td><td class="right" style="color:#91a0ba">Fixed clause, cannot be disabled</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Handbook -->
+  <div class="tabpane" id="tab-guide">
+    <div class="card guide">
+      <h2 class="title">Handbook</h2>
+      <div class="sub">Six short chapters. Read them before you tune parameters — they cover most of the usual traps.</div>
+
+      <details open><summary>1. Look-ahead bias: the number one reason backtests flatter</summary>
+        <p>Look-ahead bias means using information at a decision point that could not have been known at the time. The three common forms: filling at the same bar's close that generated the signal, reading an indicator value that only exists after the bar closes, and treating parameters that looked best in hindsight as if they had been chosen in advance.</p>
+        <p>The rule here: a signal is generated at the close and executed on the next bar. You pay one bar of delay for it, and in exchange you never get the illusion of having sold the exact top.</p>
+      </details>
+
+      <details><summary>2. Why Sharpe lies</summary>
+        <p>Sharpe divides average return by the standard deviation of returns, and it carries three built-in flaws. First, it assumes returns are roughly normal — fat-tailed markets make it read high. Second, it is wildly unstable on short samples: a few dozen observations can produce a fake 2.0. Third, it does not distinguish upside from downside volatility, so a violent strategy and a calm one can score identically.</p>
+        <p>That is why this tool also reports Sortino (which penalises downside only) and Calmar (CAGR ÷ max drawdown). Reading all three is far more reliable than Sharpe alone.</p>
+      </details>
+
+      <details><summary>3. Out-of-sample and walk-forward</summary>
+        <p>Out-of-sample means the data that played no part in choosing the parameters. This tool reserves the last 30% by default, but a single split is still fragile — if that 30% happens to be one-directional bull market, the conclusion distorts.</p>
+        <p>Walk-forward goes further: pick parameters on an earlier window, validate on the window immediately after — which took no part in that choice — then roll forward and repeat. Only when most folds are positive out of sample does a strategy qualify as roughly stable. One or two profitable folds is usually luck.</p>
+      </details>
+
+      <details><summary>4. What funding really costs</summary>
+        <p>Perpetual futures settle funding every 8 hours. If you are long, a positive rate means you pay and a negative rate means you get paid; shorts are the opposite. A single settlement is usually a few basis points, but three times a day and over a thousand times a year — a persistent long can lose a meaningful slice of return in a bull market.</p>
+        <p>This tool uses the exchange's published settlement history period by period. Only the earlier range that the contract's history does not reach falls back to the flat estimate you enter. The fallback range is flagged in the summary so you can judge how much to trust the conclusion.</p>
+      </details>
+
+      <details><summary>5. Leverage and liquidation: the risk backtests skip</summary>
+        <p>Leverage magnifies the payoff and compresses the survival room. At 2x, a 50% adverse move wipes you out; at 10x, only 10% is needed. Real liquidation also involves the maintenance margin rate, mark price, and the difference between isolated and cross margin.</p>
+        <p>This tool approximates isolated-margin liquidation with the maintenance margin rate: when account equity falls below notional × MMR, the position is declared liquidated and trading stops. It is a conservative approximation, not an exact simulation — but it is enough to show you the case that matters: beautiful backtest returns on leverage that would in reality have been wiped out long ago.</p>
+      </details>
+
+      <details><summary>6. Overfitting: is this parameter set just lucky?</summary>
+        <p>Overfitting means the parameters only work on this particular slice of history. Three ways to spot it: check whether the heatmap shows a broad block of similar colour (robust) or isolated bright cells (fitted); check whether a small change in a neighbouring parameter causes a cliff-edge collapse; check whether the out-of-sample period continues the in-sample edge.</p>
+        <p>Practical advice: do not pick the brightest cell in the heatmap. Pick a centre point whose entire neighbourhood looks decent. The first is fitted to history; only the second has a chance of continuing.</p>
+      </details>
+
+      <div class="note warn" style="margin-top:18px">This handbook explains methodology only. It is not investment advice. Any strategy can stop working, and backtested results do not indicate future performance.</div>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<div class="foot">
+  LOCAL QUANT LAB · everything is processed inside this browser tab. No candles, accounts or parameters are ever uploaded.<br>
+  This tool never connects to a trading account and never produces order instructions. It exists for historical analysis and research only. Backtest results are not investment advice.
+</div>
+</main>
+<script>
+/* Local Quant Lab — 回测引擎（纯逻辑，无 DOM，可内联进单文件 HTML） */
+(function (root) {
+  'use strict';
+
+  // ---------------- 基础统计 ----------------
+  function smaAt(v, n, i) {
+    if (i + 1 < n) return NaN;
+    let s = 0;
+    for (let j = i - n + 1; j <= i; j++) s += v[j];
+    return s / n;
+  }
+  function sdAt(v, n, i, m) {
+    if (i + 1 < n) return NaN;
+    let s = 0;
+    for (let j = i - n + 1; j <= i; j++) s += (v[j] - m) ** 2;
+    return Math.sqrt(s / (n - 1));
+  }
+  function emaSeries(v, n) {
+    const out = new Array(v.length).fill(NaN);
+    const k = 2 / (n + 1);
+    let prev = NaN;
+    for (let i = 0; i < v.length; i++) {
+      if (i === n - 1) {
+        let s = 0;
+        for (let j = 0; j < n; j++) s += v[j];
+        prev = s / n; out[i] = prev;
+      } else if (i > n - 1) {
+        prev = v[i] * k + prev * (1 - k); out[i] = prev;
+      }
+    }
+    return out;
+  }
+  function atrAt(h, l, c, n, i) {
+    if (i < n) return NaN;
+    let s = 0;
+    for (let j = i - n + 1; j <= i; j++) {
+      const prev = j ? c[j - 1] : c[j];
+      s += Math.max(h[j] - l[j], Math.abs(h[j] - prev), Math.abs(l[j] - prev));
+    }
+    return s / n;
+  }
+  function rsiSeries(c, n) {
+    const out = new Array(c.length).fill(NaN);
+    let gain = 0, loss = 0;
+    for (let i = 1; i < c.length; i++) {
+      const ch = c[i] - c[i - 1];
+      const g = ch > 0 ? ch : 0, lo = ch < 0 ? -ch : 0;
+      if (i <= n) { gain += g; loss += lo; if (i === n) out[i] = 100 - 100 / (1 + gain / (loss || 1e-12)); }
+      else {
+        gain = (gain * (n - 1) + g) / n;
+        loss = (loss * (n - 1) + lo) / n;
+        out[i] = 100 - 100 / (1 + gain / (loss || 1e-12));
+      }
+    }
+    return out;
+  }
+  function rollingMax(v, n, i) { if (i < n) return NaN; let m = -Infinity; for (let j = i - n; j < i; j++) if (v[j] > m) m = v[j]; return m; }
+  function rollingMin(v, n, i) { if (i < n) return NaN; let m = Infinity; for (let j = i - n; j < i; j++) if (v[j] < m) m = v[j]; return m; }
+
+  // ---------------- 策略 ----------------
+  const STRATEGIES = [
+    { id: 'channel', name: 'Trend follow · channel breakout + risk budget' },
+    { id: 'atrbreak', name: 'ATR trailing stop · breakout 2.5×ATR' },
+    { id: 'regime', name: 'Regime filter · fast/slow MA' },
+    { id: 'donchian', name: 'Breakout · Donchian' },
+    { id: 'sma', name: 'Short-term · dual moving average' },
+    { id: 'macd', name: 'MACD trend · 12/26/9' },
+    { id: 'keltner', name: 'Keltner breakout · EMA20 ± 2ATR' },
+    { id: 'supertrend', name: 'SuperTrend · ATR 3.0' },
+    { id: 'momentum', name: 'Momentum · ROC + long MA filter' },
+    { id: 'multitf', name: 'Multi-timeframe · 5/20/60 aligned' },
+    { id: 'boll', name: 'Mean reversion · Bollinger bands' },
+    { id: 'rsi', name: 'RSI reversal · 30/70' },
+    { id: 'vwapdev', name: 'VWAP deviation · 20 periods' },
+    { id: 'hold', name: 'Long only · benchmark' }
+  ];
+
+  // 生成信号：返回 {sig, size, meta}
+  function genSignals(candles, type, p) {
+    p = p || {};
+    const c = candles.map(x => x.close), h = candles.map(x => x.high), l = candles.map(x => x.low);
+    const n = c.length;
+    const fast = p.fast || 20, slow = p.slow || 50;
+    const riskPct = (p.risk != null ? p.risk : 1.0) / 100, lev = p.lev || 2, stopPct = p.stop || 10;
+    const baseSize = Math.min(1, Math.max(0.01, riskPct / Math.max((stopPct / 100) * lev, 1e-4)));
+    const sig = new Array(n).fill(0), size = new Array(n).fill(0);
+    const sizing = p.sizing || 'risk';
+    const volTarget = p.volTarget || 0.4; // 年化波动目标
+
+    function volSize(i) {
+      if (i < 21) return baseSize;
+      const rets = [];
+      for (let j = i - 19; j <= i; j++) rets.push(c[j] / c[j - 1] - 1);
+      const m = rets.reduce((a, b) => a + b, 0) / rets.length;
+      const sd = Math.sqrt(rets.reduce((a, b) => a + (b - m) ** 2, 0) / (rets.length - 1));
+      if (!sd) return baseSize;
+      const annVol = sd * Math.sqrt(365);
+      return Math.min(1, Math.max(0.02, volTarget / Math.max(annVol, 1e-6)));
+    }
+
+    // 状态
+    let chPos = 0, chEntry = 0, chPeak = 0, chTrough = Infinity, chSize = 0;
+    let stPos = 0, stLine = NaN;
+    let rsiPos = 0;
+    let kcPos = 0;
+    const ema20 = emaSeries(c, 20), emaF = emaSeries(c, fast), emaS = emaSeries(c, slow);
+    const macdLine = c.map((_, i) => (Number.isFinite(emaF[i]) && Number.isFinite(emaS[i]) ? emaF[i] - emaS[i] : NaN));
+    const macdSig = emaSeries(macdLine.map(x => (Number.isFinite(x) ? x : 0)), 9);
+    const rsi = rsiSeries(c, 14);
+    // 多周期：把序列按 1/4/16 根降采样后取方向
+    const agg = (k, i) => {
+      if (i < k * 2) return 0;
+      const cur = c[i], prev = c[i - k];
+      return cur > prev ? 1 : cur < prev ? -1 : 0;
+    };
+
+    for (let i = 0; i < n; i++) {
+      const price = c[i];
+      let s = 0, sz = sizing === 'inverseVol' ? volSize(i) : baseSize;
+
+      if (type === 'hold') {
+        s = 1; sz = 1 / Math.max(lev, 1); // 1 倍全仓基准，不受风险预算约束
+      } else if (type === 'sma') {
+        const f = smaAt(c, fast, i), sl = smaAt(c, slow, i);
+        s = Number.isFinite(f) && Number.isFinite(sl) ? (f > sl ? 1 : f < sl ? -1 : 0) : 0;
+      } else if (type === 'regime') {
+        const mF = smaAt(c, fast, i), mS = smaAt(c, slow, i);
+        s = Number.isFinite(mS) && Number.isFinite(mF) ? (price > mS && mF > mS ? 1 : price < mS && mF < mS ? -1 : 0) : 0;
+      } else if (type === 'donchian') {
+        if (i >= slow) {
+          const hi = rollingMax(c, fast, i), lo = rollingMin(c, fast, i), ma = smaAt(c, slow, i);
+          s = price > hi && price > ma ? 1 : price < lo && price < ma ? -1 : 0;
+        }
+      } else if (type === 'boll') {
+        const m = smaAt(c, slow, i), sd = sdAt(c, slow, i, m);
+        s = Number.isFinite(sd) ? (price < m - 2 * sd ? 1 : price > m + 2 * sd ? -1 : 0) : 0;
+      } else if (type === 'channel' || type === 'atrbreak') {
+        const ma = smaAt(c, slow, i);
+        const hiB = i >= fast ? rollingMax(c, fast, i) : NaN;
+        const loB = i >= fast ? rollingMin(c, fast, i) : NaN;
+        const exitWin = Math.max(5, Math.round(fast / 3));
+        const hi20 = i >= exitWin ? rollingMax(c, exitWin, i) : NaN;
+        const lo20 = i >= exitWin ? rollingMin(c, exitWin, i) : NaN;
+        const atr = atrAt(h, l, c, 20, i);
+        if (chPos === 1) {
+          chPeak = Math.max(chPeak, price);
+          const atrStop = type === 'atrbreak' ? chPeak - 2.5 * atr : chEntry * (1 - stopPct / 100);
+          if (price <= atrStop || price < lo20 || price < ma) { chPos = 0; chSize = 0; }
+        } else if (chPos === -1) {
+          chTrough = Math.min(chTrough, price);
+          const atrStop = type === 'atrbreak' ? chTrough + 2.5 * atr : chEntry * (1 + stopPct / 100);
+          if (price >= atrStop || price > hi20 || price > ma) { chPos = 0; chSize = 0; }
+        }
+        if (chPos === 0 && i >= slow && Number.isFinite(ma)) {
+          if (price > hiB && price > ma) {
+            chPos = 1; chEntry = price; chPeak = price;
+            const dist = type === 'atrbreak' ? (2.5 * atr) / price : stopPct / 100;
+            chSize = Math.min(1, riskPct / Math.max(dist * lev, 1e-4));
+          } else if (price < loB && price < ma) {
+            chPos = -1; chEntry = price; chTrough = price;
+            const dist = type === 'atrbreak' ? (2.5 * atr) / price : stopPct / 100;
+            chSize = Math.min(1, riskPct / Math.max(dist * lev, 1e-4));
+          }
+        }
+        s = chPos;
+        if (chPos) sz = Math.max(0.02, Math.min(1, chSize));
+      } else if (type === 'macd') {
+        const m = macdLine[i], sg = macdSig[i];
+        s = Number.isFinite(m) && Number.isFinite(sg) ? (m > sg ? 1 : m < sg ? -1 : 0) : 0;
+      } else if (type === 'keltner') {
+        const mid = ema20[i], atr = atrAt(h, l, c, 20, i);
+        if (Number.isFinite(mid) && Number.isFinite(atr)) {
+          const up = mid + 2 * atr, dn = mid - 2 * atr;
+          if (kcPos === 0) { if (price > up) kcPos = 1; else if (price < dn) kcPos = -1; }
+          else if (kcPos === 1 && price < mid) kcPos = 0;
+          else if (kcPos === -1 && price > mid) kcPos = 0;
+        }
+        s = kcPos;
+      } else if (type === 'supertrend') {
+        const atr = atrAt(h, l, c, 20, i);
+        if (Number.isFinite(atr)) {
+          const mult = 3.0, mid = (h[i] + l[i]) / 2;
+          if (stPos === 0) { stPos = price > mid ? 1 : -1; stLine = stPos === 1 ? mid - mult * atr : mid + mult * atr; }
+          else if (stPos === 1) {
+            const cand = mid - mult * atr;
+            stLine = Math.max(stLine, cand);
+            if (price < stLine) { stPos = -1; stLine = mid + mult * atr; }
+          } else {
+            const cand = mid + mult * atr;
+            stLine = Math.min(stLine, cand);
+            if (price > stLine) { stPos = 1; stLine = mid - mult * atr; }
+          }
+        }
+        s = stPos;
+      } else if (type === 'momentum') {
+        const look = fast;
+        const ma = smaAt(c, slow, i);
+        if (i >= look && Number.isFinite(ma)) {
+          const roc = price / c[i - look] - 1;
+          s = roc > 0 && price > ma ? 1 : roc < 0 && price < ma ? -1 : 0;
+        }
+      } else if (type === 'multitf') {
+        // 三档均线方向一致（短 5 / 中 20 / 长 60），并要求价在长均线之上（做空反之）
+        const d = k => {
+          if (i < k * 2) return 0;
+          const a = smaAt(c, k, i), b = smaAt(c, k, i - k);
+          return Number.isFinite(a) && Number.isFinite(b) ? (a > b ? 1 : a < b ? -1 : 0) : 0;
+        };
+        const s5 = d(5), s20 = d(20), s60 = d(60), m60 = smaAt(c, 60, i);
+        s = Number.isFinite(m60) && s5 !== 0 && s5 === s20 && s20 === s60 && ((s5 === 1 && price > m60) || (s5 === -1 && price < m60)) ? s5 : 0;
+      } else if (type === 'rsi') {
+        const r = rsi[i];
+        if (Number.isFinite(r)) {
+          if (rsiPos === 0) { if (r < 30) rsiPos = 1; else if (r > 70) rsiPos = -1; }
+          else if (rsiPos === 1 && r > 50) rsiPos = 0;
+          else if (rsiPos === -1 && r < 50) rsiPos = 0;
+        }
+        s = rsiPos;
+      } else if (type === 'vwapdev') {
+        const win = slow;
+        if (i >= win) {
+          let pv = 0, vv = 0;
+          for (let j = i - win + 1; j <= i; j++) { const vol = candles[j].volume || 1; pv += ((h[j] + l[j] + c[j]) / 3) * vol; vv += vol; }
+          const vwap = pv / (vv || 1);
+          const dev = p.dev != null ? p.dev : 2;
+          s = price < vwap * (1 - dev / 100) ? 1 : price > vwap * (1 + dev / 100) ? -1 : 0;
+        }
+      }
+
+      sig[i] = s; size[i] = s ? sz : 0;
+    }
+    return { sig, size, baseSize };
+  }
+
+  // ---------------- 模拟 ----------------
+  function simulate(candles, sig, size, o) {
+    const cash = o.cash, fee = o.fee, slip = o.slip, lev = o.lev;
+    const fallback = o.funding, mmr = o.mmr != null ? o.mmr : 0.005;
+    const useLiq = o.liquidate !== false;
+    const stopPct = (o.stop != null ? o.stop : 10) / 100;
+    const fundingEvents = o.fundingEvents || [];
+    const fStart = o.fundingStart != null ? o.fundingStart : Infinity;
+    const n = candles.length;
+    let pos = 0, curSize = 0, eq = cash, exposureSum = 0, dead = false;
+    let entryPrice = 0;
+    const equity = [], dailyPnL = [], trades = [];
+    let feeSlipPaid = 0, fundingPaid = 0, entries = 0, stopOuts = 0, liquidations = 0, liquidatedAt = null;
+    let prevClose = candles[0].close;
+
+    for (let i = 0; i < n; i++) {
+      let target = i && !dead ? sig[i - 1] : 0;
+      let targetSize = i && !dead ? size[i - 1] : 0;
+
+      // 通用止损：价格反向走 stopPct（按杠杆折算为账户风险）即离场
+      if (!dead && pos !== 0 && stopPct > 0 && entryPrice > 0) {
+        const move = pos === 1 ? candles[i].close / entryPrice - 1 : 1 - candles[i].close / entryPrice;
+        if (move * lev <= -stopPct) {
+          target = 0; targetSize = 0;
+          stopOuts++;
+          trades.push({ date: candles[i].date, side: 'Stop out', price: candles[i].close, bar: i, stop: true });
+        }
+      }
+
+      const turnover = Math.abs(target * targetSize - pos * curSize);
+      if (target !== pos && i && !dead) {
+        entries++;
+        const side = pos === 0 ? (target === 1 ? 'Open long' : 'Open short') : target === 0 ? (pos === 1 ? 'Close long' : 'Close short') : (target === 1 ? 'Flip long' : 'Flip short');
+        if (!(target === 0 && trades.length && trades[trades.length - 1].stop && trades[trades.length - 1].bar === i))
+          trades.push({ date: candles[i].date, side, price: candles[i].close, bar: i });
+      }
+      if (target !== 0 && target !== pos) entryPrice = candles[i].close;
+      if (target === 0) entryPrice = 0;
+
+      const r = i ? candles[i].close / prevClose - 1 : 0;
+      const dt = i ? Math.max(0, (candles[i].date - candles[i - 1].date) / 3600000) : 0;
+      const t0 = i ? candles[i - 1].date.getTime() : candles[i].date.getTime();
+      const t1 = candles[i].date.getTime();
+
+      const notional = cash * lev * curSize;
+      let pnl = pos * notional * r;
+      let fundCost = 0;
+      if (pos !== 0 && notional > 0) {
+        if (t1 >= fStart && fundingEvents.length) {
+          for (const ev of fundingEvents) if (ev.time > t0 && ev.time <= t1) fundCost += pos * notional * ev.rate;
+        } else fundCost = pos * notional * fallback * (dt / 8);
+      }
+      const cost = turnover * cash * lev * (fee + slip);
+      eq += pnl - fundCost - cost;
+      feeSlipPaid += cost; fundingPaid += fundCost;
+      if (pos !== 0) exposureSum += Math.abs(pos * notional) / Math.max(cash, 1e-9);
+
+      // 强平：权益低于维持保证金要求
+      if (useLiq && pos !== 0 && notional > 0 && eq <= notional * mmr) {
+        liquidations++; liquidatedAt = candles[i].date;
+        eq = Math.max(eq, 0); dead = true; pos = 0; curSize = 0;
+        trades.push({ date: candles[i].date, side: 'Liquidation', price: candles[i].close, bar: i, liq: true });
+      }
+
+      equity.push(Math.max(eq, 0));
+      dailyPnL.push({ date: candles[i].date, ret: i && equity[i - 1] > 0 ? (Math.max(eq, 0) / equity[i - 1] - 1) : 0 });
+      if (!dead) { pos = target; curSize = targetSize; }
+      prevClose = candles[i].close;
+    }
+    return { equity, dailyPnL, trades, entries, stopOuts, feeSlipPaid, fundingPaid, liquidations, liquidatedAt, exposureSum: exposureSum / n };
+  }
+
+  // ---------------- 指标 ----------------
+  function metrics(equity, cash, dailyPnL, candles, trades, exposureSum) {
+    const n = equity.length;
+    const total = Math.max(-1, equity[n - 1] / cash - 1);
+    const days = Math.max((candles[n - 1].date - candles[0].date) / 86400000, 1);
+    const years = days / 365.25;
+    const cagr = equity[n - 1] > 0 ? (equity[n - 1] / cash) ** (1 / years) - 1 : -1;
+
+    let peak = equity[0], mdd = 0; const dd = [];
+    for (const v of equity) { if (v > peak) peak = v; const d = peak > 0 ? v / peak - 1 : 0; if (d < mdd) mdd = d; dd.push(d); }
+
+    // 日频收益
+    const dayMap = new Map();
+    for (const d of dailyPnL) { const k = d.date.toISOString().slice(0, 10); dayMap.set(k, (dayMap.get(k) || 1) * (1 + d.ret)); }
+    const dr = [...dayMap.values()].map(v => v - 1).filter(Number.isFinite);
+    const mean = dr.reduce((a, b) => a + b, 0) / Math.max(dr.length, 1);
+    const variance = dr.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(dr.length - 1, 1);
+    const sd = Math.sqrt(variance);
+    const sharpe = sd > 0 ? (mean / sd) * Math.sqrt(365) : 0;
+    const downside = dr.filter(x => x < 0);
+    const dsd = downside.length ? Math.sqrt(downside.reduce((a, b) => a + b * b, 0) / downside.length) : 0;
+    const sortino = dsd > 0 ? (mean / dsd) * Math.sqrt(365) : 0;
+    const calmar = mdd < 0 ? cagr / Math.abs(mdd) : 0;
+
+    // 交易统计：按持仓区间配对
+    const rounds = [];
+    let open = null;
+    for (const t of trades) {
+      if (t.side.startsWith('Open') || t.side.startsWith('Flip')) { if (open) { open.exit = t.price; open.exitBar = t.bar; open.exitDate = t.date; rounds.push(open); } open = { entry: t.price, entryBar: t.bar, entryDate: t.date, dir: t.side.includes('long') ? 1 : -1 }; }
+      else if (open) { open.exit = t.price; open.exitBar = t.bar; open.exitDate = t.date; rounds.push(open); open = null; }
+    }
+    if (open) { open.exit = candles[n - 1].close; open.exitBar = n - 1; open.exitDate = candles[n - 1].date; rounds.push(open); }
+    const wins = rounds.filter(x => (x.dir === 1 ? x.exit > x.entry : x.exit < x.entry));
+    const losses = rounds.filter(x => (x.dir === 1 ? x.exit <= x.entry : x.exit >= x.entry));
+    const winRate = rounds.length ? wins.length / rounds.length : 0;
+    const avgWin = wins.length ? wins.reduce((a, x) => a + Math.abs(x.exit / x.entry - 1), 0) / wins.length : 0;
+    const avgLoss = losses.length ? losses.reduce((a, x) => a + Math.abs(x.exit / x.entry - 1), 0) / losses.length : 0;
+    const profitFactor = avgLoss > 0 ? (avgWin * wins.length) / (avgLoss * losses.length) : (wins.length ? Infinity : 0);
+    let maxConsecLoss = 0, curLoss = 0;
+    for (const x of rounds) { if (losses.includes(x)) { curLoss++; maxConsecLoss = Math.max(maxConsecLoss, curLoss); } else curLoss = 0; }
+    const avgHoldBars = rounds.length ? rounds.reduce((a, x) => a + (x.exitBar - x.entryBar), 0) / rounds.length : 0;
+
+    // 月度
+    const monthly = new Map();
+    for (let i = 1; i < n; i++) {
+      const d = candles[i].date, key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      monthly.set(key, (monthly.get(key) || 1) * (equity[i] / equity[i - 1]));
+    }
+    const monthlyRets = [...monthly.entries()].map(([k, v]) => ({ key: k, ret: v - 1 }));
+
+    // 滚动 Sharpe（30 个日频观测）
+    const rolling = [];
+    const win = 30;
+    const dayKeys = [...dayMap.keys()];
+    const dayVals = [...dayMap.values()].map(v => v - 1);
+    for (let i = win; i <= dayVals.length; i++) {
+      const seg = dayVals.slice(i - win, i);
+      const m = seg.reduce((a, b) => a + b, 0) / seg.length;
+      const s = Math.sqrt(seg.reduce((a, b) => a + (b - m) ** 2, 0) / (seg.length - 1));
+      rolling.push({ date: dayKeys[i - 1], v: s > 0 ? (m / s) * Math.sqrt(365) : 0 });
+    }
+
+    return { total, cagr, mdd, sharpe, sortino, calmar, dd, winRate, avgWin, avgLoss, profitFactor, maxConsecLoss, avgHoldBars, rounds, monthly: monthlyRets, rolling, days, years, exposure: exposureSum };
+  }
+
+  function sampleSplit(equity, candles) {
+    const cut = Math.max(1, Math.floor(equity.length * 0.7));
+    const inSample = equity[cut - 1] / equity[0] - 1;
+    const outSample = equity[equity.length - 1] / equity[cut - 1] - 1;
+    return { inSample, outSample, splitDate: candles[cut - 1].date, cut };
+  }
+
+  function oosSharpe(dailyPnL, cutDate) {
+    const m = new Map();
+    for (const d of dailyPnL) { if (d.date < cutDate) continue; const k = d.date.toISOString().slice(0, 10); m.set(k, (m.get(k) || 1) * (1 + d.ret)); }
+    const r = [...m.values()].map(v => v - 1);
+    if (r.length < 5) return 0;
+    const mu = r.reduce((a, b) => a + b, 0) / r.length;
+    const s = Math.sqrt(r.reduce((a, b) => a + (b - mu) ** 2, 0) / (r.length - 1));
+    return s > 0 ? (mu / s) * Math.sqrt(365) : 0;
+  }
+
+  // ---------------- 主回测 ----------------
+  function run(candles, opts) {
+    const o = Object.assign({
+      strategy: 'sma', fast: 20, slow: 50, cash: 10000, fee: 0.001, slip: 0.0005,
+      lev: 2, risk: 1.0, funding: 0.0001, stop: 10, mmr: 0.005, sizing: 'risk',
+      liquidate: true, fundingEvents: [], fundingStart: Infinity
+    }, opts || {});
+    const { sig, size, baseSize } = genSignals(candles, o.strategy, o);
+    const simOpts = o.strategy === 'hold' ? Object.assign({}, o, { stop: 0, liquidate: false }) : o;
+    const s = simulate(candles, sig, size, simOpts);
+    const m = metrics(s.equity, o.cash, s.dailyPnL, candles, s.trades, s.exposureSum);
+    const sp = sampleSplit(s.equity, candles);
+    const os = oosSharpe(s.dailyPnL, sp.splitDate);
+    const base = candles.map((x, i) => o.cash * (x.close / candles[0].close));
+    return Object.assign({}, m, s, {
+      type: o.strategy, strategy: o.strategy, cash: o.cash, eq: s.equity[s.equity.length - 1],
+      inSample: sp.inSample, outSample: sp.outSample, splitDate: sp.splitDate,
+      oosSharpe: os, benchmark: candles[candles.length - 1].close / candles[0].close - 1,
+      excess: (s.equity[s.equity.length - 1] / o.cash - 1) - (candles[candles.length - 1].close / candles[0].close - 1),
+      baseArr: base, baseSize, fundingCount: (o.fundingEvents || []).length,
+      bars: candles.length, candles
+    });
+  }
+
+  // ---------------- 参数热力图 ----------------
+  function gridScan(candles, opts, axisX, axisY, metricName) {
+    const xs = axisX.values, ys = axisY.values;
+    const cells = [];
+    for (let yi = 0; yi < ys.length; yi++) {
+      const row = [];
+      for (let xi = 0; xi < xs.length; xi++) {
+        const p = Object.assign({}, opts);
+        p[axisX.key] = xs[xi]; p[axisY.key] = ys[yi];
+        let v = NaN;
+        try {
+          const r = run(candles, p);
+          v = metricName === 'sharpe' ? r.sharpe : metricName === 'mdd' ? r.mdd : metricName === 'cagr' ? r.cagr : r.total;
+        } catch (e) { v = NaN; }
+        row.push(v);
+      }
+      cells.push(row);
+    }
+    let min = Infinity, max = -Infinity;
+    cells.forEach(r => r.forEach(v => { if (Number.isFinite(v)) { min = Math.min(min, v); max = Math.max(max, v); } }));
+    return { xs, ys, cells, min, max, metric: metricName };
+  }
+
+  // ---------------- 滚动验证（Walk-forward：扩张训练窗口 → 紧接其后验证） ----------------
+  function walkForward(candles, opts, folds) {
+    folds = folds || 5;
+    const n = candles.length;
+    const trainMin = Math.max(120, Math.floor(n * 0.4));
+    const testLen = Math.max(30, Math.floor((n - trainMin) / folds));
+    const out = [];
+    const paramIds = ['sma', 'macd', 'momentum', 'channel', 'donchian', 'boll'];
+    for (let f = 0; f < folds; f++) {
+      const testStart = trainMin + f * testLen;
+      if (testStart + 30 > n) break;
+      const testEnd = f === folds - 1 ? n : Math.min(n, testStart + testLen);
+      const train = candles.slice(0, testStart);
+      const test = candles.slice(testStart, testEnd);
+      let best = null;
+      if (paramIds.includes(opts.strategy)) {
+        const fGrid = [10, 20, 30, 50];
+        // 慢周期必须小于验证段长度，否则参数在验证段里根本来不及成型，会造出一整折 0 交易的假结果
+        const sGrid = [50, 80, 120, 200].filter(sv => sv <= Math.max(60, Math.round(test.length / 2)));
+        for (const fv of fGrid) for (const sv of sGrid) {
+          if (opts.strategy === 'sma' && sv <= fv) continue;
+          let r;
+          try { r = run(train, Object.assign({}, opts, { fast: fv, slow: sv })); } catch (e) { continue; }
+          if (!Number.isFinite(r.sharpe)) continue;
+          if (!best || r.sharpe > best.sharpe) best = { fast: fv, slow: sv, sharpe: r.sharpe };
+        }
+      }
+      const useOpts = best ? Object.assign({}, opts, { fast: best.fast, slow: best.slow }) : opts;
+      const r2 = run(test, useOpts);
+      // 该折验证区间内标的自身的涨跌（Buy & Hold），用于判断相邻折是否落在同一段行情
+      const bh = test.length > 1 ? (test[test.length - 1].close / test[0].close) - 1 : 0;
+      const regime = bh > 0.25 ? 'bull' : bh < -0.25 ? 'bear' : 'range';
+      // 有效性判定：验证段长度够参数成型、且确实产生了交易，否则这一折不参与胜率统计
+      const minBars = Math.max(30, Math.ceil((useOpts.slow || 0) * 1.2));
+      const valid = test.length >= minBars && r2.entries > 0;
+      out.push({
+        fold: f + 1, from: test[0].date, to: test[test.length - 1].date,
+        params: best, ret: r2.total, sharpe: r2.sharpe, mdd: r2.mdd, trades: r2.entries,
+        trainBars: train.length, testBars: test.length,
+        bh, regime, valid,
+        days: Math.round((test[test.length - 1].date - test[0].date) / 86400000)
+      });
+    }
+    const validFolds = out.filter(x => x.valid);
+    const positive = validFolds.filter(x => x.ret > 0).length;
+    const stability = validFolds.length ? positive / validFolds.length : 0;
+    const compounded = validFolds.reduce((a, x) => a * (1 + x.ret), 1) - 1;
+    // 独立性诊断：相邻折若处于同一种行情（同为牛市/熊市/震荡），它们并不是互相独立的样本
+    const segments = [];
+    out.forEach(f => {
+      const last = segments[segments.length - 1];
+      if (last && last.regime === f.regime) last.folds.push(f.fold);
+      else segments.push({ regime: f.regime, folds: [f.fold] });
+    });
+    const effectiveSamples = segments.length;
+    const overlapSegments = segments.filter(s => s.folds.length > 1);
+    return {
+      folds: out, stability, count: out.length, compounded,
+      validCount: validFolds.length, invalidFolds: out.filter(x => !x.valid).map(x => x.fold),
+      segments, effectiveSamples, overlapSegments,
+      // 名义折数 vs 独立样本数：独立样本数按连续同行情段压缩
+      nominal: out.length
+    };
+  }
+
+  // ---------------- 跨资产复跑：同一组参数，在未参与调参的数据集上检验 ----------------
+  function crossCheck(datasets, opts) {
+    const rows = [];
+    for (const d of datasets) {
+      if (!d || !d.candles || d.candles.length < 60) continue;
+      // 不同资产不共享资金费率历史，统一按填写值估算，保证横向可比
+      const useOpts = Object.assign({}, opts, { fundingEvents: [], fundingStart: Infinity });
+      let r;
+      try { r = run(d.candles, useOpts); } catch (e) { continue; }
+      rows.push({
+        name: d.name,
+        bars: d.candles.length,
+        from: d.candles[0].date,
+        to: d.candles[d.candles.length - 1].date,
+        total: r.total, sharpe: r.sharpe, mdd: r.mdd, trades: r.entries,
+        bh: (d.candles[d.candles.length - 1].close / d.candles[0].close) - 1
+      });
+    }
+    const pos = rows.filter(x => x.total > 0).length;
+    const sameSign = rows.filter(x => x.sharpe > 0).length;
+    return { rows, positive: pos, sameSign, count: rows.length };
+  }
+
+  const api = { run, genSignals, simulate, metrics, gridScan, walkForward, crossCheck, STRATEGIES, smaAt, sdAt, atrAt, emaSeries, rsiSeries };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.QL = api;
+})(typeof module !== 'undefined' && module.exports ? module.exports : this);
+
+</script>
+<script>
+window.__TIER__="free";
+window.__LIC__="";
+window.__VER__="4.2";
+window.__LANG__="en";
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmt = (x, d = 2) => Number.isFinite(x) ? Number(x).toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
+  const pct = (x, d = 2) => Number.isFinite(x) ? (x * 100).toFixed(d) + '%' : '—';
+
+  let candles = [], fundingEvents = [], fundingStart = Infinity;
+  let lastResult = null, lastGrid = null, lastWF = null, lastXA = null;
+  let dataSource = 'Not loaded';
+  // 已载入过的数据集缓存，供跨资产复跑使用（只存在内存里，关闭页面即清空）
+  const datasets = [];
+
+  // ---------- Strategy下拉 ----------
+  const TIER = window.__TIER__ || 'std';
+  const EN = (window.__LANG__ || 'zh') === 'en';
+  const FREE = TIER === 'free';
+  const FREE_STRATEGIES = ['sma', 'boll', 'regime', 'hold'];
+  const STRAT_LIST = FREE ? QL.STRATEGIES.filter(s => FREE_STRATEGIES.includes(s.id)) : QL.STRATEGIES;
+  STRAT_LIST.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = s.name; $('strategy').appendChild(o);
+  });
+  $('strategy').value = FREE ? 'sma' : 'channel';
+
+  function setStatus(el, msg, tone) {
+    const node = $(el);
+    node.textContent = msg;
+    node.style.color = tone === 'ok' ? 'var(--green)' : tone === 'bad' ? 'var(--red)' : 'var(--gold)';
+  }
+
+  function readOpts() {
+    const strategy = $('strategy').value;
+    return {
+      strategy,
+      fast: +$('fast').value || 20,
+      slow: +$('slow').value || 50,
+      cash: +$('cash').value || 10000,
+      fee: (+$('fee').value || 0) / 100,
+      slip: (+$('slip').value || 0) / 100,
+      lev: +$('lev').value || 1,
+      risk: +$('risk').value || 1,
+      stop: +$('stop').value || 0,
+      funding: (+$('funding').value || 0) / 100,
+      mmr: (+$('mmr').value || 0.5) / 100,
+      sizing: $('sizing').value,
+      fundingEvents, fundingStart,
+      liquidate: true
+    };
+  }
+
+  // ---------- 数据 ----------
+  function parseCSV(text) {
+    const lines = text.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
+    if (lines.length < 2) throw Error('CSV has no data rows');
+    const heads = lines.shift().split(',').map(x => x.trim().toLowerCase().replaceAll('"', ''));
+    const idx = {};
+    heads.forEach((h, i) => { if (idx[h] === undefined) idx[h] = i; });
+    for (const k of ['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+      if (idx[k] === undefined) throw Error('Missing required columns: ' + k);
+    const out = [];
+    for (const line of lines) {
+      const a = line.split(',').map(x => x.trim().replace(/^"|"$/g, ''));
+      if (!a.length) continue;
+      let t = a[idx.timestamp];
+      const date = /^\d{10,13}$/.test(t) ? new Date(Number(t) * (t.length === 10 ? 1000 : 1)) : new Date(t);
+      const row = { date, open: +a[idx.open], high: +a[idx.high], low: +a[idx.low], close: +a[idx.close], volume: +a[idx.volume] };
+      if (!isNaN(date) && Number.isFinite(row.close) && row.close > 0) out.push(row);
+    }
+    out.sort((x, y) => x.date - y.date);
+    const map = new Map(out.map(x => [x.date.getTime(), x]));
+    const clean = [...map.values()];
+    if (clean.length < 60) throw Error('Need at least 60 valid bars');
+    return clean;
+  }
+
+  async function fetchOKX(inst, bar, wanted) {
+    const all = [];
+    let after = null;
+    for (let page = 0; page < Math.ceil(wanted / 300); page++) {
+      const u = new URL('https://www.okx.com/api/v5/market/history-candles');
+      u.searchParams.set('instId', inst);
+      u.searchParams.set('bar', bar);
+      u.searchParams.set('limit', String(Math.min(300, wanted - all.length)));
+      if (after) u.searchParams.set('after', after);
+      const res = await fetch(u);
+      if (!res.ok) throw Error('OKX request failed (HTTP ' + res.status + '）');
+      const j = await res.json();
+      if (j.code !== '0') throw Error(j.msg || 'OKX returned an error');
+      const rows = j.data || [];
+      if (!rows.length) break;
+      all.push(...rows);
+      const oldest = Math.min(...rows.map(x => +x[0]));
+      if (!Number.isFinite(oldest) || String(oldest) === after) break;
+      after = String(oldest);
+      if (rows.length < 2) break;
+      await new Promise(r => setTimeout(r, 120));
+    }
+    const m = new Map();
+    for (const r of all) if (r[8] === '1' || r[8] === undefined) m.set(+r[0], { date: new Date(+r[0]), open: +r[1], high: +r[2], low: +r[3], close: +r[4], volume: +r[5] });
+    return [...m.values()].sort((a, b) => a.date - b.date);
+  }
+
+  async function fetchFunding(inst) {
+    try {
+      const u = new URL('https://www.okx.com/api/v5/public/funding-rate-history');
+      u.searchParams.set('instId', inst);
+      u.searchParams.set('limit', '400');
+      const res = await fetch(u);
+      if (!res.ok) return false;
+      const j = await res.json();
+      if (j.code !== '0') return false;
+      fundingEvents = (j.data || []).map(v => ({ time: +v.fundingTime, rate: +(v.realizedRate ?? v.fundingRate) }))
+        .filter(v => Number.isFinite(v.time) && Number.isFinite(v.rate)).sort((a, b) => a.time - b.time);
+      fundingStart = fundingEvents.length ? fundingEvents[0].time : Infinity;
+      return fundingEvents.length > 0;
+    } catch (e) { return false; }
+  }
+
+  function updateMeta() {
+    if (!candles.length) { $('dataMeta').textContent = 'No data loaded'; return; }
+    $('dataMeta').innerHTML = `${dataSource}<br>${candles.length.toLocaleString()} bars<br>${candles[0].date.toLocaleDateString()} — ${candles[candles.length - 1].date.toLocaleDateString()}`;
+    $('fundingMeta').textContent = fundingEvents.length
+      ? `Funding: ${fundingEvents.length} real settlement records loaded, from ${new Date(fundingEvents[0].time).toLocaleDateString()}; earlier periods use your flat estimate.`
+      : 'Funding: no settlement history available — everything uses your flat estimate (confidence is lower).';
+  }
+
+  // ---------- 数据集缓存（跨资产复跑用） ----------
+  function rememberDataset(name) {
+    if (!candles.length) return;
+    const rec = { name, candles: candles.slice(), fundingEvents, fundingStart };
+    const i = datasets.findIndex(d => d.name === name);
+    if (i >= 0) datasets[i] = rec; else datasets.push(rec);
+    if (datasets.length > 8) datasets.shift();
+    renderDatasetChips();
+  }
+  function renderDatasetChips() {
+    const el = $('xassetList');
+    if (!el) return;
+    el.innerHTML = datasets.length
+      ? datasets.map(d => `<span class="chip">${d.name} · ${d.candles.length.toLocaleString()} ${EN ? 'bars' : '根'}</span>`).join('')
+      : `<span class="chip">${EN ? 'No cached datasets yet - load a second asset or timeframe first' : '尚无缓存数据集：先在数据源里取第二个资产或第二个周期'}</span>`;
+  }
+
+  // ---------- 绘图 ----------
+  function setupCanvas(cv) {
+    const r = cv.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.max(r.width, 10), h = Math.max(r.height, 10);
+    cv.width = w * dpr; cv.height = h * dpr;
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h };
+  }
+
+  function paintLine(ctx, w, h, series, labels, theme) {
+    const th = theme || { grid: '#25314a', text: '#7f8ea8' };
+    const L = 58, R = 14, T = 12, B = 28;
+    const LOG = series.some(s => s.log);
+    const all = series.flatMap(s => s.data).filter(Number.isFinite);
+    if (!all.length) return;
+    const floor = Math.max(Math.min(...all.filter(v => v > 0)) * 0.6, 1);
+    const tf = v => LOG ? Math.log10(Math.max(v, floor)) : v;
+    const inv = t => LOG ? Math.pow(10, t) : t;
+    let min = Math.min(...all.map(tf)), max = Math.max(...all.map(tf));
+    const pad = (max - min) * 0.08 || 1;
+    min -= pad; max += pad;
+    const n = Math.max(...series.map(s => s.data.length));
+    const X = i => L + (n > 1 ? i / (n - 1) : 0.5) * (w - L - R);
+    const Y = v => T + (max - tf(v)) / (max - min) * (h - T - B);
+    ctx.font = '10px -apple-system,BlinkMacSystemFont,sans-serif';
+    ctx.strokeStyle = th.grid;
+    ctx.fillStyle = th.text;
+    for (let k = 0; k <= 4; k++) {
+      const y = T + k * (h - T - B) / 4, val = inv(max - k * (max - min) / 4);
+      ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(w - R, y); ctx.stroke();
+      ctx.fillText(fmt(val, 0), 4, y + 3);
+    }
+    series.forEach(s => {
+      ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2;
+      ctx.beginPath();
+      s.data.forEach((v, i) => { if (!Number.isFinite(v)) return; i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)); });
+      ctx.stroke();
+    });
+    if (labels && labels.length) {
+      ctx.fillStyle = th.text;
+      [0, 0.25, 0.5, 0.75, 1].forEach(p => {
+        const i = Math.round(p * (labels.length - 1));
+        const lab = labels[i] instanceof Date ? labels[i].toLocaleDateString() : String(labels[i]);
+        ctx.fillText(lab, Math.max(L, Math.min(w - R - 46, X(i) - 22)), h - 8);
+      });
+    }
+  }
+
+  function paintArea(ctx, w, h, data, color, theme) {
+    const th = theme || { grid: '#25314a', text: '#7f8ea8' };
+    const L = 58, R = 14, T = 12, B = 26;
+    if (!data || !data.length) return;
+    const min = Math.min(...data, 0), max = 0;
+    const X = i => L + (data.length > 1 ? i / (data.length - 1) : 0.5) * (w - L - R);
+    const Y = v => T + (max - v) / ((max - min) || 1) * (h - T - B);
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.strokeStyle = th.grid;
+    ctx.fillStyle = th.text;
+    for (let k = 0; k <= 3; k++) {
+      const y = T + k * (h - T - B) / 3, val = max - k * (max - min) / 3;
+      ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(w - R, y); ctx.stroke();
+      ctx.fillText((val * 100).toFixed(0) + '%', 6, y + 3);
+    }
+    ctx.beginPath();
+    ctx.moveTo(X(0), Y(0));
+    data.forEach((v, i) => ctx.lineTo(X(i), Y(v)));
+    ctx.lineTo(X(data.length - 1), Y(0));
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, T, 0, h - B);
+    g.addColorStop(0, 'rgba(255,113,134,.34)');
+    g.addColorStop(1, 'rgba(255,113,134,.03)');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath();
+    ctx.strokeStyle = color || '#ff7186'; ctx.lineWidth = 1.6;
+    data.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
+    ctx.stroke();
+  }
+
+  function lineChart(cv, series, labels) {
+    const { ctx, w, h } = setupCanvas(cv);
+    ctx.clearRect(0, 0, w, h);
+    paintLine(ctx, w, h, series, labels);
+  }
+
+  function areaChart(cv, data, color) {
+    const { ctx, w, h } = setupCanvas(cv);
+    ctx.clearRect(0, 0, w, h);
+    paintArea(ctx, w, h, data, color);
+  }
+
+  // 离屏绘制：报告用，不依赖页面可见性
+  function offscreen(w, h, paint, scale) {
+    const dpr = scale || 2;
+    const cv = document.createElement('canvas');
+    cv.width = w * dpr; cv.height = h * dpr;
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    paint(ctx, w, h);
+    return cv.toDataURL('image/png');
+  }
+
+  function barChart(cv, values, labels) {
+    const { ctx, w, h } = setupCanvas(cv);
+    ctx.clearRect(0, 0, w, h);
+    const L = 20, R = 14, T = 14, B = 30;
+    const maxAbs = Math.max(...values.map(Math.abs), 0.01);
+    const zeroY = T + (h - T - B) / 2;
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.strokeStyle = '#25314a';
+    ctx.beginPath(); ctx.moveTo(L, zeroY); ctx.lineTo(w - R, zeroY); ctx.stroke();
+    const bw = (w - L - R) / values.length;
+    values.forEach((v, i) => {
+      const x = L + i * bw + bw * 0.18, wid = bw * 0.64;
+      const hgt = Math.abs(v) / maxAbs * ((h - T - B) / 2);
+      const y = v >= 0 ? zeroY - hgt : zeroY;
+      ctx.fillStyle = v >= 0 ? '#45d6a1' : '#ff7186';
+      ctx.beginPath(); ctx.roundRect(x, y, wid, hgt, 4); ctx.fill();
+      ctx.fillStyle = '#a9b8d0';
+      ctx.fillText((v * 100).toFixed(1) + '%', x + 2, v >= 0 ? y - 5 : y + hgt + 12);
+      if (labels) {
+        ctx.fillStyle = '#7f8ea8';
+        ctx.fillText(labels[i], x + 2, h - 8);
+      }
+    });
+  }
+
+  function heatColor(v, min, max, invert) {
+    if (!Number.isFinite(v)) return '#28324a';
+    if (max - min < 1e-9) return '#33405c';
+    let t = (v - min) / ((max - min) || 1);
+    if (invert) t = 1 - t;
+    const hue = t < 0.5 ? 352 - (352 - 220) * (t / 0.5) : 220 - (220 - 150) * ((t - 0.5) / 0.5);
+    const sat = 55, lig = 34 + Math.abs(t - 0.5) * 26;
+    return `hsl(${hue} ${sat}% ${lig}%)`;
+  }
+
+  // ---------- 渲染结果 ----------
+  function renderMetrics(r) {
+    const set = (id, txt, cls) => { $(id).textContent = txt; $(id).className = 'value ' + (cls || ''); };
+    set('mReturn', pct(r.total), r.total >= 0 ? 'positive' : 'negative');
+    set('mCagr', pct(r.cagr), r.cagr >= 0 ? 'positive' : 'negative');
+    set('mDd', pct(r.mdd), 'negative');
+    set('mSharpe', Number.isFinite(r.sharpe) ? r.sharpe.toFixed(2) : '—', r.sharpe >= 1 ? 'positive' : r.sharpe < 0 ? 'negative' : 'neutral');
+    set('mOos', pct(r.outSample), r.outSample >= 0 ? 'positive' : 'negative');
+    set('mTrades', String(r.entries), '');
+    $('chartSub').textContent = `${QL.STRATEGIES.find(s => s.id === r.strategy)?.name || r.strategy}&nbsp;·&nbsp; final equity ${fmt(r.eq)} USDT&nbsp;·&nbsp;${r.bars.toLocaleString()} bars`;
+  }
+
+  function renderSummary(r) {
+    const p = readOpts();
+    const rows = [
+      ['Strategy', QL.STRATEGIES.find(s => s.id === r.strategy)?.name || r.strategy],
+      ['Sample range', `${candles[0].date.toLocaleDateString()} — ${candles[candles.length - 1].date.toLocaleDateString()}`],
+      ['End equity', fmt(r.eq) + ' USDT'],
+      ['Buy &amp; hold / excess', pct(r.benchmark) + ' / ' + pct(r.excess)],
+      ['In-sample (first 70%)', pct(r.inSample)],
+      ['Out-of-sample (last 30%)', pct(r.outSample) + ' · from ' + r.splitDate.toLocaleDateString()],
+      ['Sortino / Calmar', `${r.sortino.toFixed(2)} / ${r.calmar.toFixed(2)}`],
+      ['Leverage / risk budget', `${p.lev}x / ${p.risk}% per trade`],
+      ['Sizing mode / avg exposure', `${p.sizing === 'risk' ? 'Risk budget' : 'Inverse volatility'} / ${r.exposure.toFixed(1)}%`],
+      ['Cumulative fees &amp; slippage', fmt(r.feeSlipPaid) + ' USDT'],
+      ['Cumulative funding', fmt(r.fundingPaid) + ' USDT (negative = net received)'],
+      ['Stop-outs / liquidations', `${r.stopOuts || 0} / ${r.liquidations}`],
+      ['Funding data', r.fundingCount ? `${r.fundingCount} real settlements` : 'all flat estimate'],
+      ['Execution', 'Signal at close, executed next bar']
+    ];
+    $('summary').innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td class="right">${v}</td></tr>`).join('');
+  }
+
+  function renderTrades(r) {
+    const rows = r.trades.slice(-14).reverse();
+    $('trades').innerHTML = rows.length
+      ? rows.map(t => {
+        const cls = t.liq || t.stop || /空|平|Short|Close/.test(t.side) ? 'negative' : 'positive';
+        return `<tr><td>${t.date.toLocaleDateString()}</td><td class="${cls}">${t.side}</td><td class="right mono">${fmt(t.price, 4)}</td></tr>`;
+      }).join('')
+      : '<tr><td colspan="3" style="color:#91a0ba">no position changes</td></tr>';
+  }
+
+  function renderPerf(r) {
+    // 回撤
+    if (r.dd && r.dd.length) {
+      $('ddEmpty').classList.add('hide');
+      if (document.querySelector('#tab-perf.on')) areaChart($('cvDD'), r.dd);
+      lastResult.__needDD = true;
+    }
+    // 月度热力
+    if (r.monthly && r.monthly.length) {
+      $('monthEmpty').classList.add('hide');
+      const years = [...new Set(r.monthly.map(m => m.key.slice(0, 4)))].sort();
+      const map = new Map(r.monthly.map(m => [m.key, m.ret]));
+      const maxAbs = Math.max(...r.monthly.map(m => Math.abs(m.ret)), 0.01);
+      let html = '<div class="axisrow" style="grid-template-columns:52px repeat(12,1fr)"><div></div>';
+      for (let m = 1; m <= 12; m++) html += `<div style="text-align:center">${m}</div>`;
+      html += '</div>';
+      years.forEach(y => {
+        html += `<div class="heat" style="grid-template-columns:52px repeat(12,1fr);margin-top:3px"><div style="display:flex;align-items:center;color:#91a0ba;font-size:11px">${y}</div>`;
+        for (let m = 1; m <= 12; m++) {
+          const k = `${y}-${String(m).padStart(2, '0')}`;
+          const v = map.get(k);
+          if (v === undefined) { html += '<div class="heatcell" style="background:#1a2336;color:#4c5a72">·</div>'; continue; }
+          const t = Math.abs(v) / maxAbs;
+          const hue = v >= 0 ? 150 : 352;
+          html += `<div class="heatcell" style="background:hsl(${hue} ${45 + t * 25}% ${20 + t * 34}%);color:${t > 0.45 ? '#08131f' : '#cfd9e8'}">${(v * 100).toFixed(1)}</div>`;
+        }
+        html += '</div>';
+      });
+      $('monthHeat').innerHTML = html;
+    }
+    // 滚动 sharpe
+    if (r.rolling && r.rolling.length > 2) {
+      $('rollEmpty').classList.add('hide');
+      if (document.querySelector('#tab-perf.on'))
+        lineChart($('cvRoll'), [{ data: r.rolling.map(x => x.v), color: '#a78bfa', width: 1.8 }], r.rolling.map(x => x.date));
+    }
+    // 统计
+    const stats = [
+      ['Win rate', r.winRate ? (r.winRate * 100).toFixed(1) + '%' : '—'],
+      ['Profit factor', Number.isFinite(r.profitFactor) ? r.profitFactor.toFixed(2) : 'Not enough data'],
+      ['Avg win / avg loss', `${pct(r.avgWin)} / ${pct(r.avgLoss)}`],
+      ['Avg holding (bars)', r.avgHoldBars ? r.avgHoldBars.toFixed(0) : '—'],
+      ['Longest losing streak', r.maxConsecLoss + ' trades'],
+      ['Completed rounds', r.rounds.length + ' rounds'],
+      ['Stop-outs', (r.stopOuts || 0) + ' liq'],
+      ['Liquidations', r.liquidations + ' liq']
+    ];
+    $('statGrid').innerHTML = stats.map(([k, v]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  }
+
+  function drawRunTab(r) {
+    $('eqEmpty').classList.add('hide');
+    if (!document.querySelector('#tab-run.on')) return;
+    lineChart($('cvEquity'), [
+      { data: r.baseArr, color: '#63738c', width: 1.4, log: true },
+      { data: r.equity, color: '#79a9ff', width: 2, log: true }
+    ], r.candles.map(c => c.date));
+  }
+
+  function redrawAll() {
+    if (!lastResult) return;
+    drawRunTab(lastResult);
+    if (document.querySelector('#tab-perf.on')) {
+      areaChart($('cvDD'), lastResult.dd);
+      if (lastResult.rolling && lastResult.rolling.length > 2)
+        lineChart($('cvRoll'), [{ data: lastResult.rolling.map(x => x.v), color: '#a78bfa', width: 1.8 }], lastResult.rolling.map(x => x.date));
+    }
+    if (document.querySelector('#tab-wf.on') && lastWF) drawWF(lastWF);
+    if (document.querySelector('#tab-grid.on') && lastGrid) drawGrid(lastGrid);
+  }
+
+  // ---------- 运行 ----------
+  function doRun() {
+    try {
+      if (!candles.length) throw Error('Import a CSV or fetch candles first');
+      const r = QL.run(candles, readOpts());
+      lastResult = r;
+      renderMetrics(r); renderSummary(r); renderTrades(r); renderPerf(r); drawRunTab(r);
+      setStatus('runStatus', `Backtest done: ${r.entries} trades, ${r.liquidations} liquidations.`, 'ok');
+      $('reportStatus').textContent = 'Backtest result ready — report can be generated';
+      $('reportStatus').style.color = 'var(--green)';
+    } catch (e) {
+      setStatus('runStatus', e.message, 'bad');
+    }
+  }
+  $('runBtn').onclick = doRun;
+
+  // 参数变化自动重算
+  ['strategy', 'fast', 'slow', 'cash', 'lev', 'risk', 'stop', 'fee', 'slip', 'funding', 'mmr', 'sizing'].forEach(id => {
+    $(id).addEventListener('change', () => { if (candles.length && lastResult) doRun(); });
+  });
+  $('strategy').addEventListener('change', () => {
+    const s = $('strategy').value;
+    $('fastLabel').textContent = (s === 'momentum') ? 'Momentum lookback' : (s === 'boll') ? 'Bollinger window' : 'Fast period';
+    $('slowLabel').textContent = (s === 'boll') ? 'Bollinger window' : 'Slow period';
+  });
+
+  // ---------- 数据按钮 ----------
+  $('fetchBtn').onclick = async () => {
+    const btn = $('fetchBtn');
+    btn.disabled = true;
+    try {
+      const wanted = Math.min(5000, Math.max(60, +$('limit').value || 1200));
+      const inst = $('inst').value, bar = $('bar').value;
+      setStatus('status', `Fetching ${inst} ${bar} candles…`);
+      candles = await fetchOKX(inst, bar, wanted);
+      const got = await fetchFunding(inst);
+      dataSource = `OKX ${inst} · ${bar}`;
+      if (candles.length < 60) throw Error(`Only ${candles.length} complete bars available — request fewer bars or change the interval`);
+      updateMeta();
+      rememberDataset(dataSource);
+      setStatus('status', `Fetched ${candles.length.toLocaleString()} bars${got ? ', with real funding history' : ', no funding data'}. Everything stays in this tab.`, 'ok');
+      doRun();
+    } catch (e) {
+      setStatus('status', `Fetch failed: ${e.message}. A "Failed to fetch" is usually a browser CORS restriction — switch to CSV import.`, 'bad');
+    } finally { btn.disabled = false; }
+  };
+
+  $('demoBtn').onclick = () => {
+    const n = 1200;
+    let p = 25000, seed = 20241117;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const d0 = new Date('2022-01-01T00:00:00Z');
+    candles = [];
+    for (let i = 0; i < n; i++) {
+      const trend = i < 350 ? 0.00055 : i < 620 ? -0.00065 : i < 900 ? 0.00075 : -0.00025;
+      p *= Math.exp(trend + (rnd() - 0.49) * 0.025);
+      const o = p * (1 + (rnd() - 0.5) * 0.008);
+      const hi = Math.max(o, p) * (1 + rnd() * 0.006);
+      const lo = Math.min(o, p) * (1 - rnd() * 0.006);
+      candles.push({ date: new Date(d0.getTime() + i * 86400000), open: o, high: hi, low: lo, close: p, volume: 100 + rnd() * 800 });
+    }
+    fundingEvents = []; fundingStart = Infinity;
+    dataSource = 'Synthetic demo data (not real market)';
+    updateMeta();
+    setStatus('status', 'Synthetic demo data generated — it only exercises the workflow, it is not real market data.', 'ok');
+    doRun();
+  };
+
+  $('csvFile').addEventListener('change', async e => {
+    try {
+      const f = e.target.files[0];
+      if (!f) return;
+      candles = parseCSV(await f.text());
+      fundingEvents = []; fundingStart = Infinity;
+      dataSource = 'CSV：' + f.name;
+      updateMeta();
+      rememberDataset(dataSource);
+      setStatus('status', `Loaded ${candles.length.toLocaleString()} bars. No funding history — using your flat estimate.`, 'ok');
+      doRun();
+    } catch (err) {
+      setStatus('status', err.message, 'bad');
+    }
+  });
+
+  // ---------- 参数扫描 ----------
+  function drawGrid(g) {
+    $('gridEmpty').classList.add('hide');
+    const invert = g.metric === 'mdd';
+    const X = g.xs, Y = g.ys;
+    const bars = candles.length;
+    let html = `<div class="axisrow" style="grid-template-columns:56px repeat(${X.length},1fr)"><div></div>`;
+    X.forEach(v => html += `<div style="text-align:center">${v}</div>`);
+    html += '</div>';
+    g.cells.forEach((row, yi) => {
+      html += `<div class="heat" style="grid-template-columns:56px repeat(${X.length},1fr);margin-top:3px">`;
+      html += `<div style="display:flex;align-items:center;color:#91a0ba;font-size:11px">${Y[yi]}</div>`;
+      row.forEach((v, xi) => {
+        if (X[xi] >= Y[yi]) {
+          html += `<div class="heatcell" style="background:#1a2233;color:#3d4a60" title="Fast period should be shorter than slow period">·</div>`;
+          return;
+        }
+        const txt = g.metric === 'mdd' || g.metric === 'total' || g.metric === 'cagr' ? (v * 100).toFixed(1) : (Number.isFinite(v) ? v.toFixed(2) : '—');
+        // 样本充分性：Non-overlapping windows ≈ bars / slow。少于 8 个打斜纹（读数弱），少于 3 个视为无效
+        const win = Math.floor(bars / Y[yi]);
+        const weak = win < 8;
+        const dead = win < 3;
+        const bg = `background:${heatColor(v, g.min, g.max, invert)}` +
+          (weak ? `;background-image:repeating-linear-gradient(45deg,${dead ? 'rgba(6,15,26,.72)' : 'rgba(6,15,26,.42)'} 0 5px,rgba(6,15,26,0) 5px 11px)` : '');
+        const tip = EN
+          ? `slow ${Y[yi]}: about ${win} non-overlapping windows${dead ? ' - sample exhausted, this cell is not readable' : weak ? ' - thin sample, treat with care' : ''}`
+          : `慢周期 ${Y[yi]}：可用非重叠窗口约 ${win} 个${dead ? '，样本耗尽，此格不可读' : weak ? '，窗口偏少，仅供参考' : ''}`;
+        html += `<div class="heatcell" style="${bg}" title="${tip}">${txt}</div>`;
+      });
+      html += '</div>';
+    });
+    const lastWin = Math.floor(bars / Y[Y.length - 1]);
+    const firstWeak = Y.find(y => Math.floor(bars / y) < 8);
+    html += `<div style="color:#8fa0bb;font-size:12px;line-height:1.6;margin-top:10px">` +
+      (EN
+        ? `Dataset has ${bars.toLocaleString()} bars. Non-overlapping windows ≈ bars / slow, so slow ${Y[Y.length - 1]} leaves about ${lastWin}. Cells with fewer than 8 independent windows are hatched${firstWeak ? `, starting at slow ${firstWeak}` : ''}: the number there is a sample-size statement, not the point where the edge ends.`
+        : `数据集 ${bars.toLocaleString()} 根 K 线。Non-overlapping windows ≈ 总根数 / 慢周期，慢周期 ${Y[Y.length - 1]} 只剩约 ${lastWin} 个。独立窗口少于 8 个的格子已打斜纹${firstWeak ? `（从慢周期 ${firstWeak} 起）` : ''}：那里的数字说明的是样本不够，不是Strategy在此失效。`) +
+      `</div>`;
+    $('gridHeat').innerHTML = html;
+    const best = [];
+    g.cells.forEach((row, yi) => row.forEach((v, xi) => best.push({ v, xi, yi })));
+    best.sort((a, b) => invert ? a.v - b.v : b.v - a.v);
+    const b = best[0];
+    setStatus('gridEmpty', `Best cell: fast ${X[b.xi]} / slow ${Y[b.yi]} = ${Number.isFinite(b.v) ? (g.metric === 'sharpe' ? b.v.toFixed(2) : (b.v * 100).toFixed(2) + '%') : '—'}. Check whether its neighbours look good too — an isolated bright cell is usually overfitting.`, 'ok');
+    $('gridEmpty').classList.remove('hide');
+    $('gridEmpty').style.position = 'static';
+    $('gridEmpty').style.padding = '10px 0 0';
+  }
+
+  $('gridBtn').onclick = () => {
+    try {
+      if (!candles.length) throw Error('Import data first');
+      const btn = $('gridBtn'); btn.disabled = true;
+      $('gridEmpty').classList.remove('hide');
+      $('gridEmpty').textContent = 'Scanning…';
+      const opts = readOpts();
+      const metric = $('gridMetric').value;
+      const xs = [5, 10, 15, 20, 30, 40, 60, 90];
+      const ys = [30, 50, 80, 120, 160, 200, 260, 320];
+      setTimeout(() => {
+        try {
+          lastGrid = QL.gridScan(candles, opts, { key: 'fast', values: xs }, { key: 'slow', values: ys }, metric);
+          lastGrid.metric = metric;
+          drawGrid(lastGrid);
+          setStatus('gridEmpty', 'Scan complete.', 'ok');
+        } catch (e) { setStatus('gridEmpty', e.message, 'bad'); }
+        finally { btn.disabled = false; }
+      }, 30);
+    } catch (e) { setStatus('gridEmpty', e.message, 'bad'); }
+  };
+
+  // ---------- 滚动验证 ----------
+  function drawWF(wf) {
+    $('wfEmpty').classList.add('hide');
+    $('wfStab').textContent = (wf.stability * 100).toFixed(0) + '%';
+    $('wfStab').className = 'value ' + (wf.stability >= 0.6 ? 'positive' : wf.stability >= 0.4 ? 'neutral' : 'negative');
+    $('wfComp').textContent = pct(wf.compounded);
+    $('wfComp').className = 'value ' + (wf.compounded >= 0 ? 'positive' : 'negative');
+    $('wfCount').textContent = String(wf.validCount === undefined ? wf.count : wf.validCount);
+    $('wfRows').innerHTML = wf.folds.map(f => `<tr>
+      <td>F${f.fold}${f.valid === false ? (EN ? ' (short)' : '（Not enough data）') : ''}</td>
+      <td>${f.from.toLocaleDateString()} — ${f.to.toLocaleDateString()}</td>
+      <td class="right">${f.params ? f.params.fast + '/' + f.params.slow : 'flat'}</td>
+      <td class="right ${f.ret >= 0 ? 'positive' : 'negative'}">${pct(f.ret)}</td>
+      <td class="right ${(f.bh || 0) >= 0 ? 'positive' : 'negative'}">${pct(f.bh || 0)}</td>
+      <td class="right">${f.sharpe.toFixed(2)}</td>
+      <td class="right negative">${pct(f.mdd)}</td>
+      <td class="right">${f.trades}</td>
+    </tr>`).join('');
+    // 独立性诊断：名义折数 vs 真实独立样本数
+    const REG = EN ? { bull: 'bull', bear: 'bear', range: 'range' } : { bull: '牛市', bear: '熊市', range: '震荡' };
+    const segs = wf.segments || [];
+    const overlap = wf.overlapSegments || [];
+    let note = '';
+    const invalid = wf.invalidFolds || [];
+    if (wf.folds.length) {
+      const head = invalid.length
+        ? (EN ? `Folds F${invalid.join(', F')} had too few bars or no trades and were excluded from the win rate. `
+          : `F${invalid.join('、F')} 验证段过短或未产生交易，已从Win rate中剔除。`)
+        : '';
+      const p = (wf.stability * 100).toFixed(0);
+      if (!overlap.length) {
+        note = head + (EN
+          ? `The ${wf.folds.length} folds sit in different regimes (${segs.map(s => REG[s.regime]).join(' / ')}), so they are roughly independent.`
+          : `${wf.folds.length} 个折分处不同行情（${segs.map(s => REG[s.regime]).join(' / ')}），折间近似独立。`);
+      } else {
+        const parts = overlap.map(s => EN
+          ? `F${s.folds.join(', F')} are all ${REG[s.regime]}`
+          : `F${s.folds.join('、F')} 同属${REG[s.regime]}`);
+        note = head + (EN
+          ? `${parts.join('; ')}. ${wf.folds.length} nominal folds are really ${wf.effectiveSamples} independent samples - ${p}% describes behaviour across ${wf.effectiveSamples} regimes, not an ${p}% probability that the next one works.`
+          : `${parts.join('；')}。名义 ${wf.folds.length} 折，实际只有 ${wf.effectiveSamples} 个独立样本；把 ${p}% 当作「${wf.effectiveSamples} 段行情中的表现」可以，当作「${p}% 的Win rate概率」不行。`);
+      }
+    }
+    $('wfIndep').textContent = note;
+    if (!document.querySelector('#tab-wf.on')) return;
+    barChart($('cvWF'), wf.folds.map(f => f.ret), wf.folds.map(f => 'F' + f.fold));
+  }
+
+  $('wfBtn').onclick = () => {
+    try {
+      if (!candles.length) throw Error('Import data first');
+      const btn = $('wfBtn'); btn.disabled = true;
+      $('wfEmpty').classList.remove('hide');
+      $('wfEmpty').textContent = 'Running walk-forward…';
+      setTimeout(() => {
+        try {
+          lastWF = QL.walkForward(candles, readOpts(), +$('wfFolds').value);
+          drawWF(lastWF);
+        } catch (e) { $('wfEmpty').textContent = e.message; }
+        finally { btn.disabled = false; }
+      }, 30);
+    } catch (e) { $('wfEmpty').textContent = e.message; }
+  };
+
+  // ---------- 跨资产复跑 ----------
+  function drawXA(xa) {
+    $('xaPos').textContent = xa.positive + ' / ' + xa.count;
+    $('xaPos').className = 'value ' + (xa.positive === xa.count ? 'positive' : xa.positive > 0 ? 'neutral' : 'negative');
+    $('xaAgree').textContent = xa.sameSign + ' / ' + xa.count;
+    $('xaAgree').className = 'value ' + (xa.sameSign === xa.count ? 'positive' : xa.sameSign > 0 ? 'neutral' : 'negative');
+    $('xaCount').textContent = String(xa.count);
+    $('xaRows').innerHTML = xa.rows.map(r => `<tr>
+      <td>${r.name}</td>
+      <td>${r.from.toLocaleDateString()} — ${r.to.toLocaleDateString()}</td>
+      <td class="right">${r.bars.toLocaleString()}</td>
+      <td class="right ${r.total >= 0 ? 'positive' : 'negative'}">${pct(r.total)}</td>
+      <td class="right ${r.bh >= 0 ? 'positive' : 'negative'}">${pct(r.bh)}</td>
+      <td class="right">${r.sharpe.toFixed(2)}</td>
+      <td class="right negative">${pct(r.mdd)}</td>
+      <td class="right">${r.trades}</td>
+    </tr>`).join('');
+    const verdict = xa.positive === xa.count
+      ? (EN ? 'the same params hold on every dataset, so cross-market consistency is strong.'
+        : '同一组参数在全部数据集上均为正，跨市场一致性较强。')
+      : xa.positive === 0
+        ? (EN ? 'the params fail everywhere else, so the original result came from that one market regime.'
+          : '同一组参数换市场后全部失效，说明原结果高度依赖当前这段行情。')
+        : (EN ? `they only hold on ${xa.positive}/${xa.count} datasets - treat this set as specific to one kind of market, not general.`
+          : `同一组参数只在 ${xa.positive}/${xa.count} 个数据集上成立，其余失效——这组参数更适合当作「针对某一类市场」，而不是「通用」。`);
+    setStatus('xaStatus', EN
+      ? `Re-ran identical params on ${xa.count} datasets (no re-optimisation; funding assumed at the entered rate). Verdict: ${verdict}`
+      : `已在 ${xa.count} 个数据集上原样复跑（未重新调参，资金费率统一按填写值估算）。${verdict}`,
+      xa.positive === xa.count ? 'ok' : '');
+  }
+
+  $('xassetBtn').onclick = () => {
+    try {
+      if (datasets.length < 2) throw Error(EN
+        ? 'Need at least two datasets: switch the asset or timeframe in the data panel and load once more'
+        : '至少需要两个数据集：先在数据源里换一个资产或换一个周期，再取一次');
+      lastXA = QL.crossCheck(datasets, readOpts());
+      drawXA(lastXA);
+    } catch (e) { setStatus('xaStatus', e.message, 'bad'); }
+  };
+
+  // ---------- 报告 ----------
+  function buildReport(r) {
+    const p = readOpts();
+    const TH = { grid: '#e5e8ef', text: '#6b7280' };
+    const eqImg = offscreen(1040, 380, (ctx, w, h) => paintLine(ctx, w, h, [
+      { data: r.baseArr, color: '#a8b0bd', width: 1.4, log: true },
+      { data: r.equity, color: '#2f6fe0', width: 1.8, log: true }
+    ], r.candles.map(c => c.date), TH));
+    const ddImg = offscreen(1040, 300, (ctx, w, h) => paintArea(ctx, w, h, r.dd, '#e0556d', TH));
+    const rows = [
+      ['Strategy', QL.STRATEGIES.find(s => s.id === r.strategy)?.name || r.strategy],
+      ['Data source', dataSource],
+      ['Sample range', `${candles[0].date.toLocaleDateString()} — ${candles[candles.length - 1].date.toLocaleDateString()}(${r.bars} bars)`],
+      ['Start / end equity', `${fmt(p.cash)} → ${fmt(r.eq)} USDT`],
+      ['Total / annualised', `${pct(r.total)} / ${pct(r.cagr)}`],
+      ['Max drawdown', pct(r.mdd)],
+      ['Sharpe / Sortino / Calmar', `${r.sharpe.toFixed(2)} / ${r.sortino.toFixed(2)} / ${r.calmar.toFixed(2)}`],
+      ['In-sample (first 70%)', pct(r.inSample)],
+      ['Out-of-sample (last 30%)', pct(r.outSample)],
+      ['Buy &amp; hold / strategy excess', `${pct(r.benchmark)} / ${pct(r.excess)}`],
+      ['Win rate / profit factor', `${(r.winRate * 100).toFixed(1)}% / ${Number.isFinite(r.profitFactor) ? r.profitFactor.toFixed(2) : '—'}`],
+      ['Trades / avg holding', `${r.entries} / ${r.avgHoldBars.toFixed(0)} bars`],
+      ['Stop-outs / forced liquidations', `${r.stopOuts || 0} / ${r.liquidations}`],
+      ['Fees, slippage & funding cost', `${fmt(r.feeSlipPaid)} / ${fmt(r.fundingPaid)} USDT`],
+      ['Leverage / risk per trade / stop', `${p.lev}x / ${p.risk}% / ${p.stop}%`],
+      ['Fees / slippage / funding', `${p.fee * 100}% / ${p.slip * 100}% / ${(p.funding * 100).toFixed(3)}%(8h)`],
+      ['Maintenance margin', `${(p.mmr * 100).toFixed(2)}%`],
+      ['Sample length / slow period', `${r.bars.toLocaleString()} 根 / ${p.slow} 根`],
+      ['Non-overlapping windows', `${Math.floor(r.bars / p.slow)}  (below 8, the matching heatmap column is a direction hint, not a boundary claim)`],
+      ['Execution', 'Signal at close, filled on the next bar']
+    ];
+    const tradeRows = r.trades.slice(-30).reverse().map(t =>
+      `<tr><td>${t.date.toLocaleDateString()}</td><td>${t.side}</td><td class="r">${fmt(t.price, 4)}</td></tr>`
+    ).join('') || '<tr><td colspan="3">none</td></tr>';
+
+    // 验证口径：把滚动验证与跨资产复跑的真实结论写进报告，而不是只报一个Win rate数字
+    const REG = { bull: '牛市', bear: '熊市', range: '震荡' };
+    let validSection = '';
+    if (lastWF && lastWF.folds.length) {
+      const foldRows = lastWF.folds.map(f => `<tr><td>F${f.fold}</td><td>${f.from.toLocaleDateString()} — ${f.to.toLocaleDateString()}</td><td class="r">${f.params ? f.params.fast + '/' + f.params.slow : (EN ? 'fixed' : 'flat')}</td><td class="r">${pct(f.ret)}</td><td class="r">${pct(f.bh || 0)}</td><td class="r">${f.regime ? REG[f.regime] : '—'}</td><td class="r">${f.trades}</td></tr>`).join('');
+      const overlap = lastWF.overlapSegments || [];
+      const p = (lastWF.stability * 100).toFixed(0);
+      const indNote = overlap.length
+        ? (EN
+          ? `${overlap.map(s => `F${s.folds.join(', F')} are all ${REG[s.regime]}`).join('; ')} - ${lastWF.folds.length} nominal folds are really ${lastWF.effectiveSamples} independent samples. The ${p}% out-of-sample rate reads as behaviour across ${lastWF.effectiveSamples} regimes, not as a win probability.`
+          : `其中 ${overlap.map(s => `F${s.folds.join('、F')} 同属${REG[s.regime]}`).join('；')}——名义 ${lastWF.folds.length} 折，实际只有 ${lastWF.effectiveSamples} 个独立样本。样本外Win rate ${p}% 只能读作「${lastWF.effectiveSamples} 段行情中的表现」，不能当作Win rate概率。`)
+        : (EN ? 'The folds sit in different regimes and are roughly independent.' : '各折分处不同行情，折间近似独立。');
+      validSection += EN ? `<h2>V. Walk-forward</h2>
+<table><tr><td style="width:auto;color:#111">Fold</td><td style="width:auto;color:#111">Test window</td><td class="r" style="color:#111">Params</td><td class="r" style="color:#111">Return</td><td class="r" style="color:#111">Buy &amp; hold</td><td class="r" style="color:#111">Regime</td><td class="r" style="color:#111">Trades</td></tr>${foldRows}</table>
+<table>
+<tr><td>Out-of-sample win rate</td><td class="r">${p}%</td></tr>
+<tr><td>Nominal folds / independent samples</td><td class="r">${lastWF.folds.length} / ${lastWF.effectiveSamples}</td></tr>
+<tr><td>Compounded return</td><td class="r">${pct(lastWF.compounded)}</td></tr>
+<tr><td>Independence note</td><td class="r">${indNote}</td></tr>
+</table>` : `<h2>五、滚动验证</h2>
+<table><tr><td style="width:auto;color:#111">折</td><td style="width:auto;color:#111">验证区间</td><td class="r" style="color:#111">参数</td><td class="r" style="color:#111">收益</td><td class="r" style="color:#111">同期标的</td><td class="r" style="color:#111">行情</td><td class="r" style="color:#111">交易</td></tr>${foldRows}</table>
+<table>
+<tr><td>样本外Win rate</td><td class="r">${p}%（${lastWF.folds.filter(f => f.ret > 0).length}/${lastWF.folds.length} 折为正）</td></tr>
+<tr><td>名义折数 / 独立样本数</td><td class="r">${lastWF.folds.length} / ${lastWF.effectiveSamples}</td></tr>
+<tr><td>拼接收益</td><td class="r">${pct(lastWF.compounded)}</td></tr>
+<tr><td>独立性说明</td><td class="r">${indNote}</td></tr>
+</table>`;
+    }
+    if (lastXA && lastXA.rows.length) {
+      const xaRows = lastXA.rows.map(x => `<tr><td>${x.name}</td><td>${x.from.toLocaleDateString()} — ${x.to.toLocaleDateString()}</td><td class="r">${pct(x.total)}</td><td class="r">${pct(x.bh)}</td><td class="r">${x.sharpe.toFixed(2)}</td><td class="r">${pct(x.mdd)}</td><td class="r">${x.trades}</td></tr>`).join('');
+      const verdict = lastXA.positive === lastXA.count
+        ? (EN ? 'Holds on every dataset; strong cross-market consistency.' : '同一组参数在全部数据集上均为正，跨市场一致性较强。')
+        : lastXA.positive === 0
+          ? (EN ? 'Fails everywhere else; the conclusion depends on that one market regime.' : '换市场后全部失效，结论高度依赖原市场这段行情。')
+          : (EN ? `Holds on only ${lastXA.positive}/${lastXA.count} datasets; read it as market-specific, not general.` : `只在 ${lastXA.positive}/${lastXA.count} 个数据集上成立，应按「特定市场有效」而非「通用」来理解。`);
+      validSection += EN ? `<h2>VI. Cross-asset check</h2>
+<p style="color:#6b7280;font-size:12px">Identical parameters replayed on datasets that took no part in the tuning, with no re-optimisation; funding is assumed at the entered rate so the runs stay comparable.</p>
+<table><tr><td style="width:auto;color:#111">Dataset</td><td style="width:auto;color:#111">Window</td><td class="r" style="color:#111">Return</td><td class="r" style="color:#111">Buy &amp; hold</td><td class="r" style="color:#111">Sharpe</td><td class="r" style="color:#111">Max DD</td><td class="r" style="color:#111">Trades</td></tr>${xaRows}</table>
+<table><tr><td>Positive markets / datasets</td><td class="r">${lastXA.positive} / ${lastXA.count}</td></tr>
+<tr><td>Sharpe same sign</td><td class="r">${lastXA.sameSign} / ${lastXA.count}</td></tr>
+<tr><td>Verdict</td><td class="r">${verdict}</td></tr></table>` : `<h2>六、跨资产复跑</h2>
+<p style="color:#6b7280;font-size:12px">同一组参数原样跑在未参与调参的数据集上，不做重新优化；资金费率统一按填写值估算以保证横向可比。</p>
+<table><tr><td style="width:auto;color:#111">数据集</td><td style="width:auto;color:#111">区间</td><td class="r" style="color:#111">收益</td><td class="r" style="color:#111">同期标的</td><td class="r" style="color:#111">Sharpe</td><td class="r" style="color:#111">回撤</td><td class="r" style="color:#111">交易</td></tr>${xaRows}</table>
+<table><tr><td>正收益市场 / 参与复跑</td><td class="r">${lastXA.positive} / ${lastXA.count}</td></tr>
+<tr><td>Sharpe 同号</td><td class="r">${lastXA.sameSign} / ${lastXA.count}</td></tr>
+<tr><td>结论</td><td class="r">${verdict}</td></tr></table>`;
+    }
+
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Backtest report — ${QL.STRATEGIES.find(s => s.id === r.strategy)?.name || r.strategy}</title>
+<style>
+body{font:13px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#1f2937;max-width:900px;margin:40px auto;padding:0 24px;background:#fff}
+h1{font-size:22px;margin:0 0 6px}h2{font-size:15px;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid #e5e7eb}
+.meta{color:#6b7280;font-size:12px;margin-bottom:22px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+td{padding:7px 6px;border-bottom:1px solid #eef0f4}td:first-child{color:#6b7280;width:42%}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+img{width:100%;border:1px solid #e5e7eb;border-radius:8px;margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.kpi{border:1px solid #e5e7eb;border-radius:8px;padding:11px 13px}
+.kpi .k{color:#6b7280;font-size:11px}.kpi .v{font-size:19px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.disc{margin-top:30px;padding:14px;background:#fafafa;border-left:3px solid #9ca3af;font-size:11.5px;color:#4b5563;line-height:1.8}
+</style></head><body>
+<h1>Backtest report</h1>
+<div class="meta">${QL.STRATEGIES.find(s => s.id === r.strategy)?.name || r.strategy}&nbsp;·&nbsp;${dataSource}&nbsp;·&nbsp;generated ${new Date().toLocaleString()}</div>
+<div class="kpis">
+  <div class="kpi"><div class="k">Total return</div><div class="v">${pct(r.total)}</div></div>
+  <div class="kpi"><div class="k">CAGR</div><div class="v">${pct(r.cagr)}</div></div>
+  <div class="kpi"><div class="k">Max drawdown</div><div class="v">${pct(r.mdd)}</div></div>
+  <div class="kpi"><div class="k">Sharpe</div><div class="v">${r.sharpe.toFixed(2)}</div></div>
+  <div class="kpi"><div class="k">Out-of-sample</div><div class="v">${pct(r.outSample)}</div></div>
+  <div class="kpi"><div class="k">Trades</div><div class="v">${r.entries}</div></div>
+</div>
+<h2>1. Strategy and parameters</h2>
+<table>${rows.map(([k, v]) => `<tr><td>${k}</td><td class="r">${v}</td></tr>`).join('')}</table>
+<h2>2. Equity curve</h2>
+<img src="${eqImg}" alt="equity curve">
+<h2>3. Drawdown curve</h2>
+<img src="${ddImg}" alt="drawdown curve">
+<h2>4. Recent trades</h2>
+<table><tr><td style="width:auto;color:#111">Time</td><td style="width:auto;color:#111">Action</td><td class="r" style="color:#111">Price</td></tr>${tradeRows}</table>
+${validSection}
+<div class="disc"><strong>Disclaimer</strong><br>
+This report was generated by Local Quant Lab from market data supplied by the user or fetched from a public endpoint. It is for historical analysis and research only, and is not investment advice, an offer, or a promise of returns.<br>
+The backtest rests on simplified assumptions: signals are generated at the close and filled at the close of the next bar; costs use the fees and slippage entered by the user; funding uses the exchange's published settlement history where available and falls back to a flat estimate before that; liquidation is approximated as equity ≤ notional × maintenance margin rate.<br>
+Backtested results do not indicate future performance and any strategy can stop working. Live trading also involves order-book impact, mark price, funding changes and liquidity, none of which are fully modelled here. The user bears sole responsibility for their decisions.</div>
+</body></html>`;
+  }
+
+  $('reportBtn').onclick = () => {
+    try {
+      if (!lastResult) throw Error('Run a backtest first');
+      const html = buildReport(lastResult);
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `backtest-report_${lastResult.strategy}_${new Date().toISOString().slice(0, 10)}.html`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      setStatus('reportStatus', 'Report generated — download started.', 'ok');
+    } catch (e) {
+      setStatus('reportStatus', e.message, 'bad');
+    }
+  };
+
+  // ---------- Tab ----------
+  document.querySelectorAll('#tabs button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b === btn));
+      document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + btn.dataset.tab));
+      // 等一帧让隐藏的 pane 拿到真实尺寸，再绘制，否则 canvas 会画成 0 宽
+      setTimeout(() => requestAnimationFrame(redrawAll), 40);
+      setTimeout(() => requestAnimationFrame(redrawAll), 320);
+    };
+  });
+
+  window.addEventListener('resize', () => { clearTimeout(window.__rt); window.__rt = setTimeout(redrawAll, 120); });
+  renderDatasetChips();
+
+  // 授权水印
+  try {
+    const lic = window.__LIC__;
+    if (lic) $('licBadge').textContent = 'Licensed to ' + lic;
+  } catch (e) {}
+
+  // ---------- 免费版限制 ----------
+  if (FREE) {
+    $('licBadge').textContent = 'Free edition';
+    $('licBadge').style.color = '#8fd0ff';
+    const bar = document.createElement('div');
+    bar.style.cssText = 'border:1px solid #2f5a86;background:#0f2138;color:#a9c8e8;border-radius:12px;padding:11px 14px;font-size:12px;margin-bottom:14px;line-height:1.7';
+    bar.innerHTML = '<b style="color:#cfe4ff">Free edition</b>&nbsp; What you get: 4 strategies, CSV import, OKX fetch, equity curve and core metrics.<br>The parameter heatmap, walk-forward validation, report export and the other 10 strategies are in the <b style="color:#ffca72">Standard edition</b>.';
+    document.querySelector('main.shell').insertBefore(bar, document.querySelector('.grid'));
+    const gate = (id, msg, box) => {
+      const btn = $(id);
+      if (!btn) return;
+      btn.addEventListener('click', e => {
+        e.preventDefault(); e.stopImmediatePropagation();
+        setStatus(box, msg, 'bad');
+      }, true);
+    };
+    gate('gridBtn', 'The parameter heatmap is part of the Standard edition.', 'gridEmpty');
+    gate('wfBtn', 'Walk-forward validation is part of the Standard edition.', 'wfEmpty');
+    gate('reportBtn', 'Report export is part of the Standard edition.', 'reportStatus');
+    gate('xassetBtn', '跨资产复跑仅标准版提供。', 'xaStatus');
+  }
+
+  // ---------- 预置数据（用于生成展示图） ----------
+  if (window.__PRELOAD__) {
+    const P = window.__PRELOAD__;
+    candles = P.candles.map(c => ({ date: new Date(c.date), open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume }));
+    fundingEvents = P.funding || [];
+    fundingStart = fundingEvents.length ? fundingEvents[0].time : Infinity;
+    dataSource = P.source || 'OKX history';
+    $('strategy').value = P.strategy || 'regime';
+    if (P.fast) $('fast').value = P.fast;
+    if (P.slow) $('slow').value = P.slow;
+    if (P.lev) $('lev').value = P.lev;
+    if (P.risk) $('risk').value = P.risk;
+    if (P.stop) $('stop').value = P.stop;
+    updateMeta();
+    rememberDataset(dataSource);
+    setStatus('status', `Loaded ${candles.length.toLocaleString()} bars (${dataSource}) — processed in this tab only.`, 'ok');
+    doRun();
+  }
+  const ST = window.__START_TAB__;
+  if (ST) {
+    setTimeout(() => {
+      const btn = document.querySelector(`#tabs button[data-tab="${ST}"]`);
+      if (btn) btn.click();
+      if (ST === 'grid') setTimeout(() => $('gridBtn').click(), 200);
+      if (ST === 'wf') setTimeout(() => $('wfBtn').click(), 200);
+    }, 250);
+  }
+})();
+
+</script>
+</body>
+</html>
